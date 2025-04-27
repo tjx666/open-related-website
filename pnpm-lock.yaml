@@ -14,9 +14,6 @@ importers:
       '@formkit/auto-animate':
         specifier: ^0.8.2
         version: 0.8.2
-      '@unocss/reset':
-        specifier: ^66.0.0
-        version: 66.0.0
       '@vueuse/core':
         specifier: ^13.1.0
         version: 13.1.0(vue@3.5.13(typescript@5.8.3))
@@ -766,9 +763,6 @@ packages:
   '@typescript-eslint/visitor-keys@8.31.0':
     resolution: {integrity: sha512-QcGHmlRHWOl93o64ZUMNewCdwKGU6WItOU52H0djgNmn1EOrhVudrDzXz4OycCRSCPwFCDrE2iIt5vmuUdHxuQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
-
-  '@unocss/reset@66.0.0':
-    resolution: {integrity: sha512-YLFz/5yT7mFJC8JSmIUA5+bS3CBCJbtztOw+8rWzjQr/BEVSGuihWUUpI2Df6VVxXIXxKanZR6mIl59yvf+GEA==}
 
   '@unrs/resolver-binding-darwin-arm64@1.7.1':
     resolution: {integrity: sha512-KJfNZWh3ZzLVrIyQHcKf8vAzHHE4H7f6Huf07rdCwAWwfsvtGEYIYBDCEKfzfTDOMSR7J0AFsOUDEfOhJHGj7Q==}
@@ -4335,8 +4329,6 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 8.31.0
       eslint-visitor-keys: 4.2.0
-
-  '@unocss/reset@66.0.0': {}
 
   '@unrs/resolver-binding-darwin-arm64@1.7.1':
     optional: true

@@ -21,7 +21,6 @@
     "dependencies": {
         "@ant-design/icons-vue": "^7.0.1",
         "@formkit/auto-animate": "^0.8.2",
-        "@unocss/reset": "^66.0.0",
         "@vueuse/core": "^13.1.0",
         "ant-design-vue": "^4.2.6",
         "fuse.js": "^7.1.0",
