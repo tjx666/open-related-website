@@ -1,4 +1,0 @@
-@import url(@unocss/reset/tailwind-compat.css);
-
-@tailwind components;
-@tailwind utilities;

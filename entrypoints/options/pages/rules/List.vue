@@ -32,6 +32,8 @@ const showModel = ref(false);
 </template>
 
 <style scoped>
+@reference '~/assets/tailwind.css';
+
 label {
     @apply flex w-fit items-center justify-center;
 

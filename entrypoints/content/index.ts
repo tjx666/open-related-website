@@ -1,4 +1,4 @@
-import '~/assets/base.css';
+import '~/assets/tailwind.css';
 
 import { toggleExtension } from './toggleExtension';
 import { onCommand } from './utils/message';

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { onClickOutside } from '@vueuse/core';
 import { ref } from 'vue';
+
+import { onClickOutside } from '@vueuse/core';
 import type { RelatedWebsite } from 'webext-bridge';
 
 import { useEscListener } from '@/hooks/useEscListener';
@@ -43,8 +44,8 @@ onClickOutside(main, exit);
 </script>
 
 <template>
-    <div ref="root" class="h-screen bg-black bg-opacity-10 px-20 pt-32">
-        <main ref="main" class="mx-auto min-w-96 max-w-2xl bg-white shadow">
+    <div ref="root" class="bg-opacity-10 h-screen bg-black px-20 pt-32">
+        <main ref="main" class="mx-auto max-w-2xl min-w-96 bg-white shadow">
             <input
                 v-model="searchStr"
                 class="h-10 w-full border border-solid border-black pl-2"
@@ -69,4 +70,3 @@ onClickOutside(main, exit);
         </main>
     </div>
 </template>
-../background/rules../background/rules/BaseRule./composables/composable./composables/composable

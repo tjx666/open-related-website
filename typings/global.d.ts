@@ -1,9 +1,8 @@
-import { ShadowRootContentScriptUi } from 'wxt/client';
-import { App } from 'vue';
+declare module globalThis {
+    import type { ShadowRootContentScriptUi } from '#imports';
+    import type { App } from 'vue';
+    import type { Environment } from 'monaco-editor';
 
-declare global {
-    interface Window {
-        /** Only can be accessed in content script */
-        __contentScriptUI__?: ShadowRootContentScriptUi<App<Element>>;
-    }
+    var MonacoEnvironment: Environment | undefined;
+    var __contentScriptUI__: ShadowRootContentScriptUi<App<Element>> | undefined;
 }

@@ -1,13 +1,15 @@
-import { autoAnimatePlugin } from '@formkit/auto-animate/vue';
 import { createApp } from 'vue';
-import type { ContentScriptContext } from 'wxt/client';
+
+import { autoAnimatePlugin } from '@formkit/auto-animate/vue';
+
+import type { ContentScriptContext } from '#imports';
 
 import App from './Search.vue';
 
 export function exit() {
-    if (window.__contentScriptUI__) {
-        window.__contentScriptUI__.remove();
-        window.__contentScriptUI__ = undefined;
+    if (globalThis.__contentScriptUI__) {
+        globalThis.__contentScriptUI__.remove();
+        globalThis.__contentScriptUI__ = undefined;
     }
 }
 
@@ -27,12 +29,12 @@ export async function openRelatedWebsite(ctx: ContentScriptContext) {
         },
     });
 
-    window.__contentScriptUI__ = ui;
+    globalThis.__contentScriptUI__ = ui;
     ui.mount();
 }
 
 export async function toggleExtension(ctx: ContentScriptContext) {
-    if (window.__contentScriptUI__) {
+    if (globalThis.__contentScriptUI__) {
         exit();
     } else {
         await openRelatedWebsite(ctx);

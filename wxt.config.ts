@@ -1,3 +1,4 @@
+import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers';
 import Components from 'unplugin-vue-components/vite';
@@ -20,7 +21,7 @@ export default defineConfig({
         chromiumArgs: ['--auto-open-devtools-for-tabs'],
         startUrls: [
             'https://github.com/lodash/lodash',
-            'chrome-extension://lliohlaehpeobmekpjhdhlbokgcmhpab/options.html',
+            'chrome-extension://ooofpdndalnjbinlmpnhchakfihegmgc/options.html',
         ],
     },
     imports: {
@@ -33,6 +34,7 @@ export default defineConfig({
             devSourcemap: true,
         },
         plugins: [
+            tailwindcss(),
             vue(),
             Components({
                 resolvers: [

@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import './monaco.worker';
 
-import { editor as MonacoEditor } from 'monaco-editor/esm/vs/editor/editor.api';
 import { onMounted, ref } from 'vue';
+
+import { editor as MonacoEditor } from 'monaco-editor/esm/vs/editor/editor.api';
 
 import jsonRuleTemplate from './jsonRuleTemplate.json?raw';
 

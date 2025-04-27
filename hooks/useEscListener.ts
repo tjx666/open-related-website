@@ -3,6 +3,7 @@ import { onMounted, onUnmounted } from 'vue';
 
 export function useEscListener(
     callback: () => void,
+    // eslint-disable-next-line unicorn/prefer-global-this
     target: Window | Ref<HTMLElement | undefined> = window,
 ) {
     const onKeydown = (event: KeyboardEvent) => {

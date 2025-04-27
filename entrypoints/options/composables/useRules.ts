@@ -1,5 +1,6 @@
 import type { Ref } from 'vue';
 import { shallowRef, watch } from 'vue';
+
 import type { RuleItem } from 'webext-bridge';
 import { sendMessage } from 'webext-bridge/options';
 

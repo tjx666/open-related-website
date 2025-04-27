@@ -1,6 +1,7 @@
-import Fuse from 'fuse.js';
 import type { Ref } from 'vue';
 import { computed, shallowRef } from 'vue';
+
+import Fuse from 'fuse.js';
 import type { RelatedWebsite } from 'webext-bridge';
 import { onMessage, sendMessage } from 'webext-bridge/content-script';
 

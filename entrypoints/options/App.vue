@@ -7,7 +7,7 @@
         }"
     >
         <a-layout class="h-screen overflow-y-scroll bg-white">
-            <a-layout-sider class="!bg-white">
+            <a-layout-sider class="bg-white!">
                 <a-menu>
                     <a-menu-item key="rules">
                         <router-link to="/rules">rules</router-link>
