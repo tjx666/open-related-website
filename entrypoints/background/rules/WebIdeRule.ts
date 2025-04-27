@@ -17,7 +17,7 @@ interface IdeWebsite {
 export class WebIdeRule extends JsRule {
     name = 'Web IDE';
     description = 'Import the repository in web IDE';
-    matches = [/https:\/\/(github|gitlab)\.com\/.+\/.+/];
+    matchPageRegexes = [/https:\/\/(github|gitlab)\.com\/.+\/.+/];
 
     resolve(context: ResolveContext): RelatedWebsite[] {
         const platform = context.host.split('.')[0];

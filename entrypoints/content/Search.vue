@@ -56,7 +56,7 @@ onClickOutside(main, exit);
             <ul class="max-h-96 overflow-y-scroll overscroll-contain">
                 <li
                     v-for="site of filteredWebsites"
-                    :key="site.name"
+                    :key="site.title"
                     class="flex h-10 cursor-pointer items-center border-b p-2 hover:bg-gray-300"
                     @click="openWebsite(site)"
                 >

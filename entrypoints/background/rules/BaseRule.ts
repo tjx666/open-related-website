@@ -12,7 +12,7 @@ export abstract class JsRule implements BaseRule {
     public language = 'javascript';
     abstract name: string;
     abstract description: string;
-    abstract matches: RegExp[];
+    abstract matchPageRegexes: RegExp[];
     abstract resolve(context: ResolveContext): Promise<RelatedWebsite[]> | RelatedWebsite[];
 }
 
@@ -20,5 +20,6 @@ export interface JsonRule extends BaseRule {
     language: 'json';
     name: string;
     description: string;
-    matches: string[];
+    matchPageRegexpPatterns: string[];
+    relatedWebsites: RelatedWebsite[];
 }

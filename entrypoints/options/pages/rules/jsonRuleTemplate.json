@@ -1,5 +1,15 @@
 {
-    "name": "规则名称",
-    "description": "规则描述",
-    "matches": ["https://www.baidu.com*"]
+    "name": "search-engine",
+    "description": "Search engine jump",
+    "matches": ["https://www.baidu.com*"],
+    "relatedWebsites": [
+        {
+            "name": "Jump to Google",
+            "title": "Google Search",
+            "description": "Google Search Result Page of the same query word",
+            "url": "https://www.google.com?q={query:wd}",
+            "icon": "https://www.google.com/favicon.ico",
+            "openInNewTab": true
+        }
+    ]
 }

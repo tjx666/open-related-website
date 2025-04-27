@@ -6,7 +6,7 @@ import { JsRule } from './BaseRule';
 export class VSCodeRule extends JsRule {
     name = 'VSCode';
     description = 'Provide some local VSCode features';
-    matches = [/https:\/\/github\.com\/.+\/.+/];
+    matchPageRegexes = [/https:\/\/github\.com\/.+\/.+/];
 
     resolve(context: ResolveContext): RelatedWebsite[] {
         return [

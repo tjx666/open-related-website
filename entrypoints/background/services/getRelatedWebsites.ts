@@ -8,7 +8,7 @@ export async function getRelatedWebsites() {
     onMessage('getRelatedWebsites', async ({ data, sender }) => {
         const context = await createResolveContext(data.context);
         const matchedRules = rules.filter((rule) =>
-            rule.matches.some((regexp) => regexp.test(context.url)),
+            rule.matchPageRegexes.some((regexp) => regexp.test(context.url)),
         );
         const relatedWebsites: RelatedWebsite[] = [];
         const activeTabId = sender.tabId;

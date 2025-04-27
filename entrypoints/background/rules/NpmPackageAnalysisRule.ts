@@ -6,7 +6,7 @@ import { JsRule } from './BaseRule';
 export class NpmPackageAnalysisRule extends JsRule {
     name = 'Npm Package Analysis';
     description = 'Some tool website to analyze the npm package';
-    matches = [/https:\/\/github\.com\/.+\/.+/, /https:\/\/www\.npmjs\.com\/package\/.+/];
+    matchPageRegexes = [/https:\/\/github\.com\/.+\/.+/, /https:\/\/www\.npmjs\.com\/package\/.+/];
 
     async resolve(context: ResolveContext): Promise<RelatedWebsite[]> {
         const platform = context.host;

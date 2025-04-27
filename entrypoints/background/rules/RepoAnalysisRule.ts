@@ -6,7 +6,7 @@ import { JsRule } from './BaseRule';
 export class RepoAnalysisRule extends JsRule {
     name = 'Repository Analysis';
     description = 'Some tool websites to analyze the git repository';
-    matches = [/https:\/\/github\.com\/.+\/.+/];
+    matchPageRegexes = [/https:\/\/github\.com\/.+\/.+/];
 
     resolve(context: ResolveContext): RelatedWebsite[] {
         return [
