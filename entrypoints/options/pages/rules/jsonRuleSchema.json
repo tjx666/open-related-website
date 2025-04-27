@@ -1,0 +1,75 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "JSON Rule Definition",
+    "description": "Schema for defining custom related website rules in JSON format.",
+    "type": "object",
+    "properties": {
+        "language": {
+            "description": "Specifies the rule language.",
+            "type": "string",
+            "const": "json"
+        },
+        "name": {
+            "description": "Unique name for the rule.",
+            "type": "string"
+        },
+        "description": {
+            "description": "A short description of what the rule does.",
+            "type": "string"
+        },
+        "matchPageRegexpPatterns": {
+            "description": "An array of string patterns (regular expressions) to match against the page URL. If any pattern matches, the rule is considered active.",
+            "type": "array",
+            "items": {
+                "type": "string",
+                "format": "regex"
+            },
+            "minItems": 1
+        },
+        "relatedWebsites": {
+            "description": "A list of recommended websites to show when the rule matches.",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "description": "The title displayed for the recommendation.",
+                        "type": "string"
+                    },
+                    "name": {
+                        "description": "An optional unique identifier for this specific recommendation.",
+                        "type": "string"
+                    },
+                    "description": {
+                        "description": "The description displayed below the title.",
+                        "type": "string"
+                    },
+                    "icon": {
+                        "description": "URL of the icon to display (optional).",
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "url": {
+                        "description": "The final, static URL to navigate to. Use 'urlPattern' instead if you need placeholders.",
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "urlPattern": {
+                        "description": "The URL pattern/template with placeholders. Supported placeholders: {urlParam:paramName}, {dom:cssSelector}, {urlRegexGroup:index}.",
+                        "type": "string"
+                    },
+                    "openInNewTab": {
+                        "description": "Whether to open the link in a new tab (defaults to false if omitted).",
+                        "type": "boolean"
+                    }
+                },
+                "required": ["title", "description"],
+                "anyOf": [{ "required": ["url"] }, { "required": ["urlPattern"] }],
+                "additionalProperties": false
+            },
+            "minItems": 1
+        }
+    },
+    "required": ["language", "name", "description", "matchPageRegexpPatterns", "relatedWebsites"],
+    "additionalProperties": false
+}

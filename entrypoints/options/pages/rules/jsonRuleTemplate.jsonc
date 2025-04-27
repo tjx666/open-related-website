@@ -1,0 +1,33 @@
+{
+    "language": "json" /* 规则类型，必须是 json */,
+    "name": "search-engine-redirect" /* 规则名称 */,
+    "description": "Redirect searches from Baidu to other engines" /* 规则描述 */,
+    /* 下面匹配百度搜索页面 URL 的正则表达式 */
+    "matchPageRegexpPatterns": [
+        "https://www\\.baidu\\.com/s\\?.*wd=([^&]+).*" /* 匹配百度搜索结果页，并捕获搜索词 */,
+    ],
+    /* 推荐网站列表 */
+    "relatedWebsites": [
+        {
+            "title": "Google Search (Same Query)" /* 推荐项标题 */,
+            "name": "googleRedirect" /* 推荐项唯一标识名 */,
+            "description": "View the same search query on Google" /* 推荐项描述 */,
+            /* urlPattern 使用占位符：
+               {urlParam:paramName} - 获取 URL 参数值
+               {dom:selector} - 获取 DOM 元素内容
+               {urlRegexGroup:index} - 获取 URL 正则匹配捕获组
+            */
+            "urlPattern": "https://www.google.com/search?q={urlRegexGroup:1}",
+            "icon": "https://www.google.com/favicon.ico",
+            "openInNewTab": true,
+        },
+        {
+            "title": "DuckDuckGo Search",
+            "name": "duckduckgoRedirect",
+            "description": "View the same search query on DuckDuckGo",
+            "urlPattern": "https://duckduckgo.com/?q={urlRegexGroup:1}",
+            "icon": "https://duckduckgo.com/favicon.ico",
+            "openInNewTab": true,
+        },
+    ],
+}
