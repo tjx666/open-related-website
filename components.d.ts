@@ -10,6 +10,10 @@ declare module 'vue' {
   export interface GlobalComponents {
     AButton: typeof import('ant-design-vue/es')['Button']
     AConfigProvider: typeof import('ant-design-vue/es')['ConfigProvider']
+    ADivider: typeof import('ant-design-vue/es')['Divider']
+    AForm: typeof import('ant-design-vue/es')['Form']
+    AFormItem: typeof import('ant-design-vue/es')['FormItem']
+    AInput: typeof import('ant-design-vue/es')['Input']
     ALayout: typeof import('ant-design-vue/es')['Layout']
     ALayoutContent: typeof import('ant-design-vue/es')['LayoutContent']
     ALayoutSider: typeof import('ant-design-vue/es')['LayoutSider']
@@ -19,6 +23,7 @@ declare module 'vue' {
     ATable: typeof import('ant-design-vue/es')['Table']
     ATableColumn: typeof import('ant-design-vue/es')['TableColumn']
     ATableColumnGroup: typeof import('ant-design-vue/es')['TableColumnGroup']
+    ATextarea: typeof import('ant-design-vue/es')['Textarea']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
