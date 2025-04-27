@@ -27,6 +27,26 @@ class RulesManager {
         await storage.setItem('local:rules', userRules);
         return this.getAllRules();
     }
+
+    async deleteRule(name: string) {
+        const userRules = await this.getUserRules();
+        const index = userRules.findIndex((rule) => rule.name === name);
+        if (index !== -1) {
+            userRules.splice(index, 1);
+        }
+        await storage.setItem('local:rules', userRules);
+        return this.getAllRules();
+    }
+
+    async updateRule(rule: JsonRule) {
+        const userRules = await this.getUserRules();
+        const index = userRules.findIndex((r) => r.name === rule.name);
+        if (index !== -1) {
+            userRules[index] = rule;
+        }
+        await storage.setItem('local:rules', userRules);
+        return this.getAllRules();
+    }
 }
 
 const rulesManager = new RulesManager();

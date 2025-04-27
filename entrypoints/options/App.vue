@@ -12,9 +12,6 @@
                     <a-menu-item key="rules">
                         <router-link to="/rules">rules</router-link>
                     </a-menu-item>
-                    <a-menu-item key="context">
-                        <router-link to="/context">context</router-link>
-                    </a-menu-item>
                 </a-menu>
             </a-layout-sider>
             <a-layout-content><router-view /> </a-layout-content>

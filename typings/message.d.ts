@@ -1,6 +1,7 @@
 import { Command } from '@/constants/commands';
 import { PackageJson } from 'type-fest';
 import { ProtocolWithReturn } from 'webext-bridge';
+import { JsonRule } from '@/entrypoints/background/rules/BaseRule';
 
 declare module 'webext-bridge' {
     export interface RelatedWebsite {
@@ -35,6 +36,8 @@ declare module 'webext-bridge' {
         description: string;
         isBuiltin: boolean;
         language: string;
+        isEnabled: boolean;
+        lastModifiedTimestamp: number;
     }
 
     export interface ProtocolMap {
@@ -48,5 +51,7 @@ declare module 'webext-bridge' {
 
         getRules: ProtocolWithReturn<{}, RuleItem[]>;
         addRule: ProtocolWithReturn<JsonRule, RuleItem[]>;
+        deleteRule: ProtocolWithReturn<{ name: string }, RuleItem[]>;
+        updateRule: ProtocolWithReturn<JsonRule, RuleItem[]>;
     }
 }

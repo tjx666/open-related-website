@@ -6,6 +6,9 @@ export interface BaseRule {
     language: string;
     name: string;
     description: string;
+    isBuiltin: boolean;
+    isEnabled: boolean;
+    lastModifiedTimestamp: number;
 }
 
 export abstract class JsRule implements BaseRule {
@@ -13,6 +16,9 @@ export abstract class JsRule implements BaseRule {
     abstract name: string;
     abstract description: string;
     abstract matchPageRegexes: RegExp[];
+    isBuiltin = true;
+    isEnabled = true;
+    lastModifiedTimestamp = 1745756185909;
     abstract resolve(context: ResolveContext): Promise<RelatedWebsite[]> | RelatedWebsite[];
 }
 

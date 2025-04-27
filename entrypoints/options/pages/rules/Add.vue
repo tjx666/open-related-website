@@ -1,15 +1,18 @@
 <script lang="ts" setup>
 import type { UnwrapRef } from 'vue';
 import { nextTick, reactive, ref, toRaw } from 'vue';
+import { useRouter } from 'vue-router';
 
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import type { Rule } from 'ant-design-vue/es/form';
 import { sendMessage } from 'webext-bridge/options';
 
+// 路由
+const router = useRouter();
+
 // 表单数据接口
 interface FormState {
-    language: string;
     name: string;
     description: string;
     matchPageRegexpPatterns: string[];
@@ -25,7 +28,6 @@ interface FormState {
 
 // 表单数据
 const formState: UnwrapRef<FormState> = reactive({
-    language: 'json',
     name: '',
     description: '',
     matchPageRegexpPatterns: [''],
@@ -105,8 +107,23 @@ async function saveRule() {
         await formRef.value.validate();
         // 使用 sendMessage 将规则发送到后台
         const ruleData = toRaw(formState);
-        await sendMessage('addRule', ruleData);
+        console.log('add', {
+            language: 'json',
+            isBuiltin: false,
+            isEnabled: true,
+            lastModifiedTimestamp: Date.now(),
+            ...ruleData,
+        });
+        await sendMessage('addRule', {
+            language: 'json',
+            isBuiltin: false,
+            isEnabled: true,
+            lastModifiedTimestamp: Date.now(),
+            ...ruleData,
+        });
         message.success('规则保存成功');
+        // 保存成功后返回规则列表页
+        router.push('/rules');
     } catch (error) {
         console.error('表单验证失败:', error);
         message.error('请检查表单填写是否完整');
@@ -120,6 +137,21 @@ async function saveRule() {
         });
     } finally {
         submitLoading.value = false;
+    }
+}
+
+/**
+ * 自定义 URL 验证：确保 URL 模板和固定 URL 至少填写一个
+ */
+function validateUrl(_: any, value: string, callback: (error?: string) => void) {
+    const fieldPath = _.field as string;
+    const index = Number.parseInt(fieldPath.match(/\d+/)?.[0] || '0');
+    const website = formState.relatedWebsites[index];
+
+    if (!website.urlPattern && !website.url) {
+        callback('URL模板和固定URL必须至少填写一个');
+    } else {
+        callback();
     }
 }
 </script>
@@ -147,11 +179,6 @@ async function saveRule() {
             >
                 <!-- 基本信息 -->
                 <a-divider>基本信息</a-divider>
-
-                <a-form-item label="规则类型" name="language">
-                    <a-input v-model:value="formState.language" disabled />
-                    <div class="text-sm text-gray-500">规则类型固定为 json</div>
-                </a-form-item>
 
                 <a-form-item label="规则名称" name="name">
                     <a-input
@@ -267,6 +294,9 @@ async function saveRule() {
                     <a-form-item
                         label="URL模板"
                         :name="['relatedWebsites', websiteIndex, 'urlPattern']"
+                        :rules="[
+                            { validator: validateUrl, message: 'URL模板和固定URL必须至少填写一个' },
+                        ]"
                     >
                         <a-input
                             v-model:value="website.urlPattern"
@@ -279,7 +309,13 @@ async function saveRule() {
                         </div>
                     </a-form-item>
 
-                    <a-form-item label="固定URL" :name="['relatedWebsites', websiteIndex, 'url']">
+                    <a-form-item
+                        label="固定URL"
+                        :name="['relatedWebsites', websiteIndex, 'url']"
+                        :rules="[
+                            { validator: validateUrl, message: 'URL模板和固定URL必须至少填写一个' },
+                        ]"
+                    >
                         <a-input
                             v-model:value="website.url"
                             placeholder="例如: https://www.google.com/"

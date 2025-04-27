@@ -1,14 +1,12 @@
 import type { RouteRecordRaw } from 'vue-router';
 import { createRouter, createWebHashHistory } from 'vue-router';
 
-import Context from './pages/Context.vue';
 import AddRule from './pages/rules/Add.vue';
 import RuleList from './pages/rules/List.vue';
-import Rules from './pages/rules/Rules.vue';
+import Rules from './pages/rules/RulesPage.vue';
 
 const routes: RouteRecordRaw[] = [
     { path: '/', redirect: '/rules' },
-    { path: '/context', component: Context },
     {
         path: '/rules',
         component: Rules,
