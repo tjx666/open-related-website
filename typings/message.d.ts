@@ -41,8 +41,8 @@ declare module 'webext-bridge' {
         >;
 
         getRules: ProtocolWithReturn<{}, RuleItem[]>;
-        addRule: ProtocolWithReturn<JsonRule, RuleItem[]>;
-        deleteRule: ProtocolWithReturn<{ name: string }, RuleItem[]>;
-        updateRule: ProtocolWithReturn<JsonRule, RuleItem[]>;
+        addRule: ProtocolWithReturn<JsonRule, void>;
+        deleteRule: ProtocolWithReturn<{ name: string }, void>;
+        updateRule: ProtocolWithReturn<JsonRule, void>;
     }
 }

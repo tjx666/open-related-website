@@ -9,10 +9,9 @@ class RulesManager {
     }
 
     async getUserRules() {
-        const rules = await storage.getItem<JsonRule[]>('local:rules', {
+        return storage.getItem<JsonRule[]>('local:rules', {
             fallback: [],
         });
-        return rules;
     }
 
     async getAllRules(): Promise<RuleItem[]> {
@@ -25,7 +24,6 @@ class RulesManager {
         const userRules = await this.getUserRules();
         userRules.push(rule);
         await storage.setItem('local:rules', userRules);
-        return this.getAllRules();
     }
 
     async deleteRule(name: string) {
@@ -35,7 +33,6 @@ class RulesManager {
             userRules.splice(index, 1);
         }
         await storage.setItem('local:rules', userRules);
-        return this.getAllRules();
     }
 
     async updateRule(rule: JsonRule) {
@@ -43,9 +40,10 @@ class RulesManager {
         const index = userRules.findIndex((r) => r.name === rule.name);
         if (index !== -1) {
             userRules[index] = rule;
+            await storage.setItem('local:rules', userRules);
+        } else {
+            throw new Error('Rule not found');
         }
-        await storage.setItem('local:rules', userRules);
-        return this.getAllRules();
     }
 }
 
