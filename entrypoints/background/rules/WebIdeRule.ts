@@ -44,7 +44,7 @@ export class WebIdeRule implements BaseRule {
                 description: 'Allows developers to rapidly search, write, and understand code',
                 url: `https://sourcegraph.com/${platform}.com/`,
                 platforms: ['github', 'gitlab'],
-                icon: 'https://sourcegraph.com/sourcegraph/sourcegraph-mark-touch-180.png',
+                icon: 'https://sourcegraph.com/favicon.ico',
             },
         ];
 

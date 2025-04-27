@@ -1,4 +1,4 @@
-import { NpmPackageAnalysisRule } from './NomPackageAnalysisRule';
+import { NpmPackageAnalysisRule } from './NpmPackageAnalysisRule';
 import { RepoAnalysisRule } from './RepoAnalysisRule';
 import { VSCodeRule } from './VSCodeRule';
 import { WebIdeRule } from './WebIdeRule';

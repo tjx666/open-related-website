@@ -58,7 +58,7 @@ export class NpmPackageAnalysisRule implements BaseRule {
                 name: 'npmgraph',
                 description: 'A tool for exploring NPM modules and dependencies',
                 url: 'https://npmgraph.js.org/?q=',
-                icon: 'https://npmgraph.js.org/favicon.1b75a10a.png',
+                icon: 'https://npmgraph.js.org/favicon.png',
             },
             {
                 title: 'Bundlephobia',
@@ -81,14 +81,15 @@ export class NpmPackageAnalysisRule implements BaseRule {
                 url: 'https://npm-stat.com/charts.html?package=',
                 icon: 'https://npm-stat.com/favicon.ico',
             },
-            {
-                title: 'Moiva',
-                name: 'moiva',
-                description:
-                    'A Universal tool to Evaluate, Discover alternatives and Compare Software projects',
-                url: 'https://moiva.io/?npm=',
-                icon: 'https://moiva.io/favicon/favicon-16x16.png',
-            },
+            // server is down
+            // {
+            //     title: 'Moiva',
+            //     name: 'moiva',
+            //     description:
+            //         'A Universal tool to Evaluate, Discover alternatives and Compare Software projects',
+            //     url: 'https://moiva.io/?npm=',
+            //     icon: 'https://moiva.io/favicon/favicon-16x16.png',
+            // },
             {
                 title: 'RunKit',
                 name: 'runKit',
