@@ -1,3 +1,4 @@
+import { autoAnimatePlugin } from '@formkit/auto-animate/vue';
 import { createApp } from 'vue';
 import type { ContentScriptContext } from 'wxt/client';
 
@@ -18,7 +19,7 @@ export async function openRelatedWebsite(ctx: ContentScriptContext) {
         isolateEvents: true,
         onMount: (container) => {
             const app = createApp(App);
-            app.mount(container);
+            app.use(autoAnimatePlugin).mount(container);
             return app;
         },
         onRemove: (app) => {

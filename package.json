@@ -4,15 +4,7 @@
     "private": true,
     "version": "0.0.1",
     "type": "module",
-    "packageManager": "pnpm@8.15.5",
-    "eslintConfig": {
-        "extends": "@yutengjing/eslint-config-vue",
-        "settings": {
-            "import/resolver": {
-                "typescript": {}
-            }
-        }
-    },
+    "packageManager": "pnpm@10.9.0",
     "prettier": "@yutengjing/prettier-config",
     "scripts": {
         "postinstall": "wxt prepare",
@@ -28,33 +20,33 @@
     },
     "dependencies": {
         "@ant-design/icons-vue": "^7.0.1",
-        "@unocss/reset": "^0.58.6",
-        "@vueuse/core": "^10.9.0",
-        "ant-design-vue": "^4.1.2",
-        "fuse.js": "^7.0.0",
+        "@formkit/auto-animate": "^0.8.2",
+        "@unocss/reset": "^66.0.0",
+        "@vueuse/core": "^13.1.0",
+        "ant-design-vue": "^4.2.6",
+        "fuse.js": "^7.1.0",
         "lodash-es": "^4.17.21",
-        "monaco-editor": "^0.47.0",
-        "type-fest": "^4.12.0",
-        "vue": "^3.4.21",
-        "vue-router": "^4.3.0",
+        "monaco-editor": "^0.52.2",
+        "type-fest": "^4.40.1",
+        "vue": "^3.5.13",
+        "vue-router": "^4.5.1",
         "webext-bridge": "^6.0.1"
     },
     "devDependencies": {
         "@types/lodash-es": "^4.17.12",
-        "@vitejs/plugin-vue": "^5.0.4",
-        "@yutengjing/eslint-config-vue": "^0.6.0",
-        "@yutengjing/prettier-config": "^1.1.2",
-        "autoprefixer": "^10.4.18",
-        "eslint": "^8.57.0",
-        "eslint-import-resolver-typescript": "^3.6.1",
-        "postcss": "^8.4.35",
-        "postcss-load-config": "^5.0.3",
-        "prettier": "^3.2.5",
-        "prettier-plugin-tailwindcss": "^0.5.12",
+        "@vitejs/plugin-vue": "^5.2.3",
+        "@yutengjing/eslint-config-vue": "^2.5.1",
+        "@yutengjing/prettier-config": "^2.0.0",
+        "autoprefixer": "^10.4.21",
+        "eslint": "^9.25.1",
+        "postcss": "^8.5.3",
+        "postcss-load-config": "^6.0.1",
+        "prettier": "^3.5.3",
+        "prettier-plugin-tailwindcss": "^0.6.11",
         "tailwindcss": "^3.4.1",
-        "typescript": "^5.4.2",
-        "unplugin-vue-components": "^0.26.0",
-        "vue-tsc": "^2.0.6",
-        "wxt": "^0.17.7"
+        "typescript": "^5.8.3",
+        "unplugin-vue-components": "^28.5.0",
+        "vue-tsc": "^2.2.10",
+        "wxt": "^0.20.5"
     }
 }

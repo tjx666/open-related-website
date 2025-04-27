@@ -2,9 +2,6 @@ import vue from '@vitejs/plugin-vue';
 import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers';
 import Components from 'unplugin-vue-components/vite';
 import { defineConfig } from 'wxt';
-import type { Manifest } from 'wxt/browser';
-
-import type { Command } from './lib/commands';
 
 export default defineConfig({
     manifest: {
@@ -17,9 +14,9 @@ export default defineConfig({
                 },
                 description: 'Activate or deactivate extension',
             },
-        } satisfies Record<Command, Manifest.WebExtensionManifestCommandsType>,
+        },
     },
-    runner: {
+    webExt: {
         chromiumArgs: ['--auto-open-devtools-for-tabs'],
         startUrls: [
             'https://github.com/lodash/lodash',
