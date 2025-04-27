@@ -1,7 +1,7 @@
 import { Command } from '@/constants/commands';
 import { PackageJson } from 'type-fest';
 import { ProtocolWithReturn } from 'webext-bridge';
-import { JsonRule } from '@/entrypoints/background/rules/BaseRule';
+import { RuleItem } from '@/entrypoints/background/rules/BaseRule';
 
 declare module 'webext-bridge' {
     export interface RelatedWebsite {
@@ -29,15 +29,6 @@ declare module 'webext-bridge' {
          * Whether to open in a new tab
          */
         openInNewTab?: boolean;
-    }
-
-    export interface RuleItem {
-        name: string;
-        description: string;
-        isBuiltin: boolean;
-        language: string;
-        isEnabled: boolean;
-        lastModifiedTimestamp: number;
     }
 
     export interface ProtocolMap {

@@ -6,12 +6,14 @@ import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined } from '@ant-de
 import { message, Modal } from 'ant-design-vue';
 import { sendMessage } from 'webext-bridge/options';
 
+import type { JsonRule, RuleItem } from '@/entrypoints/background/rules/BaseRule';
+
 import { useRules } from '../../composables/useRules';
 import { useStorage } from '../../composables/useStorage';
 
 const router = useRouter();
 const showBuiltinRules = useStorage<boolean>('showBuiltinRules', false);
-const dataSource = useRules(showBuiltinRules);
+const { rules: dataSource, refresh: refreshRules } = useRules(showBuiltinRules);
 const loading = ref(false);
 
 /**
@@ -22,17 +24,20 @@ function editRule(ruleName: string) {
 }
 
 /**
- * 刷新规则列表
+ * 切换规则启用状态
  */
-async function refreshRules() {
-    loading.value = true;
+async function toggleRuleStatus(rule: RuleItem, enabled: boolean) {
     try {
-        const allRules = await sendMessage('getRules', {});
-        if (showBuiltinRules.value === false) {
-            dataSource.value = allRules.filter((rule) => !rule.isBuiltin);
-        } else {
-            dataSource.value = allRules;
-        }
+        loading.value = true;
+        await sendMessage('updateRule', {
+            ...rule,
+            isEnabled: enabled,
+        } as JsonRule);
+        message.success(`规则${enabled ? '启用' : '禁用'}成功`);
+        await refreshRules();
+    } catch (error) {
+        console.error('更新规则状态失败:', error);
+        message.error('更新规则状态失败');
     } finally {
         loading.value = false;
     }
@@ -69,7 +74,7 @@ function confirmDelete(ruleName: string) {
 
 <template>
     <div>
-        <div class="flex h-16 items-center justify-between px-6">
+        <div class="flex h-16 items-center justify-between px-6 pl-3">
             <div class="flex items-center">
                 <label class="flex items-center">
                     <a-switch v-model:checked="showBuiltinRules" />
@@ -95,7 +100,7 @@ function confirmDelete(ruleName: string) {
                         <a-button
                             type="link"
                             :disabled="record.isBuiltin"
-                            class="edit-btn"
+                            class="edit-btn flex! items-center"
                             @click="editRule(record.name)"
                         >
                             <template #icon><EditOutlined /></template>
@@ -105,13 +110,22 @@ function confirmDelete(ruleName: string) {
                             type="link"
                             danger
                             :disabled="record.isBuiltin"
-                            class="delete-btn"
+                            class="delete-btn flex! items-center"
                             @click="confirmDelete(record.name)"
                         >
                             <template #icon><DeleteOutlined /></template>
                             删除
                         </a-button>
                     </div>
+                </template>
+            </a-table-column>
+            <a-table-column key="isEnabled" title="启用状态" align="center" width="100px">
+                <template #default="{ record }">
+                    <a-switch
+                        v-model:checked="record.isEnabled"
+                        :disabled="record.isBuiltin"
+                        @change="(checked) => toggleRuleStatus(record, !!checked)"
+                    />
                 </template>
             </a-table-column>
             <template #emptyText>

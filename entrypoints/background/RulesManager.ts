@@ -1,7 +1,7 @@
 import { storage } from '#imports';
 
 import { rules as builtinRules } from './rules';
-import type { BaseRule, JsonRule } from './rules/BaseRule';
+import type { JsonRule, RuleItem } from './rules/BaseRule';
 
 class RulesManager {
     getBuiltinRules() {
@@ -15,7 +15,7 @@ class RulesManager {
         return rules;
     }
 
-    async getAllRules(): Promise<BaseRule[]> {
+    async getAllRules(): Promise<RuleItem[]> {
         const builtinRules = this.getBuiltinRules();
         const userRules = await this.getUserRules();
         return [...builtinRules, ...userRules];

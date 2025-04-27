@@ -29,3 +29,5 @@ export interface JsonRule extends BaseRule {
     matchPageRegexpPatterns: string[];
     relatedWebsites: RelatedWebsite[];
 }
+
+export type RuleItem = JsRule | JsonRule;

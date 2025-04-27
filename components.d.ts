@@ -19,6 +19,7 @@ declare module 'vue' {
     ALayoutSider: typeof import('ant-design-vue/es')['LayoutSider']
     AMenu: typeof import('ant-design-vue/es')['Menu']
     AMenuItem: typeof import('ant-design-vue/es')['MenuItem']
+    ASpin: typeof import('ant-design-vue/es')['Spin']
     ASwitch: typeof import('ant-design-vue/es')['Switch']
     ATable: typeof import('ant-design-vue/es')['Table']
     ATableColumn: typeof import('ant-design-vue/es')['TableColumn']
