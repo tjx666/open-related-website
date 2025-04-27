@@ -18,7 +18,10 @@ export default defineConfig({
         },
     },
     webExt: {
-        chromiumArgs: ['--auto-open-devtools-for-tabs'],
+        chromiumArgs: [
+            // '--auto-open-devtools-for-tabs',
+            '--user-data-dir=./.wxt/chrome-data',
+        ],
         startUrls: [
             'https://github.com/lodash/lodash',
             'chrome-extension://ooofpdndalnjbinlmpnhchakfihegmgc/options.html',
