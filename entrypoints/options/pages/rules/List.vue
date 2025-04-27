@@ -141,6 +141,8 @@ function confirmDelete(ruleName: string) {
 </template>
 
 <style scoped>
+@import '~/assets/tailwind.css';
+
 .edit-btn {
     @apply text-blue-500;
 }

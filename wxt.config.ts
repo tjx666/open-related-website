@@ -1,3 +1,5 @@
+import { resolve } from 'node:path';
+
 import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers';
@@ -31,6 +33,13 @@ export default defineConfig({
         addons: {
             vueTemplate: true,
         },
+    },
+    alias: {
+        '@/constants': resolve('constants'),
+        '@/background': resolve('entrypoints/background'),
+        '@/content': resolve('entrypoints/content'),
+        '@/options': resolve('entrypoints/options'),
+        '@/popup': resolve('entrypoints/popup'),
     },
     vite: () => ({
         css: {
