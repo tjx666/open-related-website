@@ -1,9 +1,9 @@
 import type { RelatedWebsite } from 'webext-bridge';
 
 import type { ResolveContext } from '../createResolveContext';
-import type { BaseRule } from './BaseRule';
+import { JsRule } from './BaseRule';
 
-export class VSCodeRule implements BaseRule {
+export class VSCodeRule extends JsRule {
     name = 'VSCode';
     description = 'Provide some local VSCode features';
     matches = [/https:\/\/github\.com\/.+\/.+/];

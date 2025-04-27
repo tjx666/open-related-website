@@ -1,9 +1,9 @@
 import type { RelatedWebsite } from 'webext-bridge';
 
 import type { ResolveContext } from '../createResolveContext';
-import type { BaseRule } from './BaseRule';
+import { JsRule } from './BaseRule';
 
-export class NpmPackageAnalysisRule implements BaseRule {
+export class NpmPackageAnalysisRule extends JsRule {
     name = 'Npm Package Analysis';
     description = 'Some tool website to analyze the npm package';
     matches = [/https:\/\/github\.com\/.+\/.+/, /https:\/\/www\.npmjs\.com\/package\/.+/];

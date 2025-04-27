@@ -1,9 +1,9 @@
 import type { RelatedWebsite } from 'webext-bridge';
 
 import type { ResolveContext } from '../createResolveContext';
-import type { BaseRule } from './BaseRule';
+import { JsRule } from './BaseRule';
 
-export class RepoAnalysisRule implements BaseRule {
+export class RepoAnalysisRule extends JsRule {
     name = 'Repository Analysis';
     description = 'Some tool websites to analyze the git repository';
     matches = [/https:\/\/github\.com\/.+\/.+/];

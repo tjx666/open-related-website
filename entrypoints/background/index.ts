@@ -1,6 +1,6 @@
 import { sendMessage } from 'webext-bridge/background';
 
-import type { Command } from '@/lib/commands';
+import type { Command } from '@/constants/commands';
 
 import { registerServices } from './services';
 

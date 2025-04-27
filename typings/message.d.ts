@@ -1,4 +1,4 @@
-import { Command } from '@/lib/commands';
+import { Command } from '@/constants/commands';
 import { PackageJson } from 'type-fest';
 import { ProtocolWithReturn } from 'webext-bridge';
 

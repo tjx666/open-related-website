@@ -2,7 +2,7 @@ import { omit } from 'lodash-es';
 import type { RelatedWebsite } from 'webext-bridge';
 
 import type { ResolveContext } from '../createResolveContext';
-import type { BaseRule } from './BaseRule';
+import { JsRule } from './BaseRule';
 
 interface IdeWebsite {
     title: string;
@@ -14,7 +14,7 @@ interface IdeWebsite {
     icon: string;
 }
 
-export class WebIdeRule implements BaseRule {
+export class WebIdeRule extends JsRule {
     name = 'Web IDE';
     description = 'Import the repository in web IDE';
     matches = [/https:\/\/(github|gitlab)\.com\/.+\/.+/];
