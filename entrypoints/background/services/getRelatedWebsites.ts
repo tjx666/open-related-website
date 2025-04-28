@@ -11,6 +11,10 @@ export async function getRelatedWebsites() {
         const context = await createResolveContext(data.context);
         const rules = await rulesManager.getAllRules();
         const matchedRules = rules.filter((rule) => {
+            if (rule.isEnabled === false) {
+                return false;
+            }
+
             if (rule instanceof JsRule) {
                 return rule.matchPageRegexes.some((regexp) => regexp.test(context.url));
             } else {
@@ -19,6 +23,7 @@ export async function getRelatedWebsites() {
                 );
             }
         });
+
         const relatedWebsites: RelatedWebsite[] = [];
         const activeTabId = sender.tabId;
         for (const rule of matchedRules) {
