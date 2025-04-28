@@ -55,7 +55,9 @@ function openWebsite(site: RelatedWebsite) {
  * 处理 URL 模板中的占位符 支持的占位符：
  *
  * - {urlParam:参数名} - 获取当前 URL 中的查询参数
+ * - {urlPathSegment:索引} - 获取 URL path 中的片段（按 / 分割，0 为第一个；不带索引则返回完整 path）
  * - {dom:选择器} - 获取页面 DOM 元素的内容
+ * - {repoPath} - 获取当前页面的仓库路径（仅在 GitHub/GitLab 等平台上可用）
  */
 function processUrlPattern(urlPattern: string): string {
     return urlPattern.replaceAll(/\{([^}]+)\}/g, (match, content) => {
@@ -67,10 +69,34 @@ function processUrlPattern(urlPattern: string): string {
             return url.searchParams.get(param) || '';
         }
 
+        if (type === 'urlPathSegment') {
+            // 从 URL path 中提取参数
+            const url = new URL(globalThis.location.href);
+            const pathParts = url.pathname.split('/').filter(Boolean);
+            // 如果没有提供索引，返回完整路径
+            if (!param) {
+                return url.pathname;
+            }
+            const index = Number.parseInt(param, 10);
+            return index < pathParts.length ? pathParts[index] : '';
+        }
+
         if (type === 'dom') {
             // 从 DOM 中提取内容
             const element = document.querySelector(param);
             return element ? element.textContent || '' : '';
+        }
+
+        if (type === 'repoPath') {
+            // Get repository path (only supported on GitHub/GitLab)
+            const host = globalThis.location.hostname;
+            if (host === 'github.com' || host === 'gitlab.com') {
+                const pathParts = location.pathname.split('/').filter(Boolean);
+                if (pathParts.length >= 2) {
+                    return `${pathParts[0]}/${pathParts[1]}`;
+                }
+            }
+            return '';
         }
 
         // 未识别的占位符类型，保持原样

@@ -206,6 +206,39 @@ function goBack() {
     router.push(RULES_PAGE_PATH);
 }
 
+/**
+ * 打开 Regex101 测试正则表达式
+ */
+function openRegex101(pattern: string) {
+    if (!pattern) {
+        message.info('请先输入正则表达式');
+        return;
+    }
+
+    // 构建测试字符串，使用一些常见的 URL 样例
+    const testString = `
+https://github.com/user/repo
+https://github.com/user/repo/tree/main
+https://gitlab.com/user/project
+https://www.npmjs.com/package/vue
+https://www.google.com/search?q=regex101
+https://stackoverflow.com/questions/tagged/javascript
+https://www.baidu.com/s?wd=正则表达式
+https://cn.bing.com/search?q=URL+pattern
+https://example.com/path/to/resource?param1=value1&param2=value2
+`;
+
+    // 直接使用输入的正则表达式，默认添加忽略大小写的 flag
+    const regex = pattern;
+    const flags = 'i';
+
+    // 构建 Regex101 URL
+    const url = `https://regex101.com/?regex=${encodeURIComponent(regex)}&flavor=javascript&flags=${flags}&testString=${encodeURIComponent(testString)}`;
+
+    // 在新标签页中打开
+    window.open(url, '_blank');
+}
+
 // 组件挂载时加载规则列表
 onMounted(() => {
     loadExistingRuleNames();
@@ -285,9 +318,37 @@ onMounted(() => {
                             placeholder="例如: https://www\.baidu\.com/s\?.*wd=([^&]+).*"
                         >
                             <template #addonAfter>
-                                <a-button type="text" danger @click="removeMatchPattern(index)">
-                                    <DeleteOutlined />
-                                </a-button>
+                                <div class="flex gap-1">
+                                    <a-button
+                                        type="link"
+                                        class="px-1"
+                                        title="在 Regex101 测试"
+                                        @click="
+                                            openRegex101(formState.matchPageRegexpPatterns[index])
+                                        "
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="16"
+                                            height="16"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        >
+                                            <path
+                                                d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+                                            ></path>
+                                            <polyline points="15 3 21 3 21 9"></polyline>
+                                            <line x1="10" y1="14" x2="21" y2="3"></line>
+                                        </svg>
+                                    </a-button>
+                                    <a-button type="text" danger @click="removeMatchPattern(index)">
+                                        <DeleteOutlined />
+                                    </a-button>
+                                </div>
                             </template>
                         </a-input>
                         <div v-if="index === 0" class="text-sm text-gray-500">
@@ -364,7 +425,10 @@ onMounted(() => {
                         <div class="text-sm text-gray-500">
                             支持的占位符：<br />
                             - {urlParam:参数名} - 获取URL中的查询参数<br />
-                            - {dom:选择器} - 获取页面DOM元素的内容
+                            - {urlPathSegment:索引} - 获取URL
+                            path中的片段（按/分割，0为第一个；不带索引则返回完整path）<br />
+                            - {dom:选择器} - 获取页面DOM元素的内容<br />
+                            - {repoPath} - 获取当前页面的仓库路径（仅在GitHub/GitLab等平台上可用）
                         </div>
                     </a-form-item>
 
