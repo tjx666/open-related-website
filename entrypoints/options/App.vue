@@ -3,6 +3,7 @@ import { useRouter } from 'vue-router';
 
 import { SettingOutlined } from '@ant-design/icons-vue';
 
+import AntdConfigProvider from '@/components/AntdConfigProvider.vue';
 import { RULES_PAGE_PATH } from '@/constants/path';
 
 const router = useRouter();
@@ -13,13 +14,7 @@ function navigateToRules() {
 </script>
 
 <template>
-    <a-config-provider
-        :theme="{
-            token: {
-                colorPrimary: '#467ee7',
-            },
-        }"
-    >
+    <AntdConfigProvider>
         <a-layout class="h-screen overflow-y-scroll bg-white">
             <a-layout-sider class="bg-white!">
                 <a-menu>
@@ -33,5 +28,5 @@ function navigateToRules() {
             </a-layout-sider>
             <a-layout-content><router-view /> </a-layout-content>
         </a-layout>
-    </a-config-provider>
+    </AntdConfigProvider>
 </template>

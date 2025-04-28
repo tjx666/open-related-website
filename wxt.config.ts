@@ -6,12 +6,14 @@ import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers';
 import Components from 'unplugin-vue-components/vite';
 import { defineConfig } from 'wxt';
 
+import { Command } from './constants/commands';
+
 export default defineConfig({
     manifest: {
         name: 'Open Related Website',
-        permissions: ['storage'],
+        permissions: ['storage', 'commands'],
         commands: {
-            toggleExtension: {
+            [Command.ToggleExtension]: {
                 suggested_key: {
                     default: 'Alt+O',
                 },

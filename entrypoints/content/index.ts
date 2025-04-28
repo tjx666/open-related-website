@@ -1,5 +1,7 @@
 import '~/assets/tailwind.css';
 
+import { Command } from '@/constants/commands';
+
 import { toggleExtension } from './toggleExtension';
 import { onCommand } from './utils/message';
 
@@ -8,7 +10,7 @@ export default defineContentScript({
     runAt: 'document_idle',
     cssInjectionMode: 'ui',
     async main(ctx) {
-        onCommand('toggleExtension', async () => {
+        onCommand(Command.ToggleExtension, async () => {
             await toggleExtension(ctx);
         });
     },
