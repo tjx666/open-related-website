@@ -22,15 +22,18 @@ export function useRelatedWebsites(searchStr: Ref<string>) {
     })();
 
     const filteredWebsites = computed(() => {
-        if (searchStr.value.trim() === '') return relatedWebsites.value;
+        if (searchStr.value.trim() === '') {
+            return relatedWebsites.value;
+        }
 
         return new Fuse(relatedWebsites.value, {
-            keys: ['name', 'title', 'description'],
+            keys: ['title', 'description'],
         })
             .search(searchStr.value)
             .map((item) => {
                 return item.item;
             });
     });
+
     return filteredWebsites;
 }
