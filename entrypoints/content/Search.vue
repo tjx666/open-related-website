@@ -2,8 +2,8 @@
 import { computed, nextTick, onMounted, ref } from 'vue';
 
 import { onClickOutside } from '@vueuse/core';
-import type { RelatedWebsite } from 'webext-bridge';
 
+import type { RelatedWebsite } from '@/background/rules/BaseRule';
 import { useEscListener } from '@/hooks/useEscListener';
 
 import { useRelatedWebsites } from './composables/useRelatedWebsites';

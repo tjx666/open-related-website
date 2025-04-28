@@ -2,7 +2,7 @@ import type { Ref } from 'vue';
 import { computed, shallowRef } from 'vue';
 
 import Fuse from 'fuse.js';
-import type { RelatedWebsite } from 'webext-bridge';
+import type { RelatedWebsite } from '@/background/rules/BaseRule';
 import { onMessage, sendMessage } from 'webext-bridge/content-script';
 
 import { createPageContext } from '../createPageContext';
