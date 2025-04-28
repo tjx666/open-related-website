@@ -95,7 +95,7 @@ onClickOutside(main, exit);
                 autofocus
                 @keydown="handleKeydown"
             />
-            <ul class="max-h-96 overflow-y-scroll overscroll-contain">
+            <ul v-auto-animate class="max-h-96 overflow-y-scroll overscroll-contain">
                 <li
                     v-for="site of filteredWebsites"
                     :key="site.title"
