@@ -1,5 +1,6 @@
-import type { RelatedWebsite } from '@/background/rules/BaseRule';
 import { onMessage, sendMessage } from 'webext-bridge/background';
+
+import type { RelatedWebsite } from '@/background/rules/BaseRule';
 
 import { createResolveContext } from '../createResolveContext';
 import { JsRule } from '../rules/BaseRule';

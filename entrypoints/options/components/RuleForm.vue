@@ -22,6 +22,7 @@ interface FormState {
         url: string;
         icon: string;
         openInNewTab: boolean;
+        level: number;
     }>;
 }
 
@@ -49,6 +50,7 @@ const formState: UnwrapRef<FormState> = reactive(
                 url: '',
                 icon: '',
                 openInNewTab: true,
+                level: 0,
             },
         ],
     },
@@ -149,6 +151,7 @@ function addRelatedWebsite() {
         url: '',
         icon: '',
         openInNewTab: true,
+        level: 0,
     });
 }
 
@@ -481,6 +484,21 @@ onMounted(() => {
                     >
                         <a-switch v-model:checked="website.openInNewTab" />
                         <div class="text-sm text-gray-500">是否在新标签页中打开链接</div>
+                    </a-form-item>
+
+                    <a-form-item
+                        label="推荐级别"
+                        :name="['relatedWebsites', websiteIndex, 'level']"
+                    >
+                        <a-input-number
+                            v-model:value="website.level"
+                            :min="0"
+                            :max="100"
+                            placeholder="0"
+                        />
+                        <div class="text-sm text-gray-500">
+                            级别越高在推荐列表中排序越靠前（当相似度相同时）
+                        </div>
                     </a-form-item>
                 </div>
 

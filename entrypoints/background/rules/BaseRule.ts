@@ -25,6 +25,11 @@ export interface RelatedWebsite {
      * Whether to open in a new tab
      */
     openInNewTab?: boolean;
+
+    /**
+     * The level of the recommended item
+     */
+    level?: number;
 }
 
 export interface BaseRule {
