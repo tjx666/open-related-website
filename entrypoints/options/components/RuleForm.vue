@@ -84,6 +84,20 @@ function validateRuleName(value: string) {
     return !existingRuleNames.value.includes(value);
 }
 
+/**
+ * 验证图标 URL 是否有效
+ */
+async function validateIconUrl(_rule: Rule, value: string) {
+    if (!value) return;
+
+    return new Promise<void>((resolve, reject) => {
+        const img = document.createElement('img');
+        img.addEventListener('load', () => resolve());
+        img.addEventListener('error', () => reject('图标加载失败，请检查URL是否正确'));
+        img.src = value;
+    });
+}
+
 // 表单验证规则
 const rules: Record<string, Rule[]> = {
     name: [
@@ -248,12 +262,6 @@ onMounted(() => {
                     <div class="text-sm text-gray-500">简要描述此规则的用途</div>
                 </a-form-item>
 
-                <!-- URL匹配模式 -->
-                <a-divider>URL匹配模式</a-divider>
-                <div class="mb-4 text-sm text-gray-500">
-                    填写正则表达式来匹配页面URL，可以使用捕获组来提取URL中的参数
-                </div>
-
                 <a-form-item
                     v-if="formState.matchPageRegexpPatterns.length === 0"
                     label="URL匹配正则"
@@ -283,7 +291,7 @@ onMounted(() => {
                             </template>
                         </a-input>
                         <div v-if="index === 0" class="text-sm text-gray-500">
-                            使用正则表达式匹配页面URL。使用捕获组可以提取参数，稍后在URL模板中通过占位符引用。
+                            使用正则表达式匹配页面URL，匹配成功就会推荐下面配置的相关网站。
                         </div>
                     </a-form-item>
                 </template>
@@ -326,7 +334,7 @@ onMounted(() => {
                             v-model:value="website.title"
                             placeholder="例如: Google Search (Same Query)"
                         />
-                        <div class="text-sm text-gray-500">在弹窗中显示的网站名称</div>
+                        <div class="text-sm text-gray-500">在推荐列表中显示的网站标题</div>
                     </a-form-item>
 
                     <a-form-item
@@ -372,16 +380,35 @@ onMounted(() => {
                             placeholder="例如: https://www.google.com/"
                         />
                         <div class="text-sm text-gray-500">
-                            不带占位符的固定URL（与URL模板二选一）
+                            不支持占位符的固定URL（与URL模板二选一）
                         </div>
                     </a-form-item>
 
-                    <a-form-item label="图标URL" :name="['relatedWebsites', websiteIndex, 'icon']">
-                        <a-input
-                            v-model:value="website.icon"
-                            placeholder="例如: https://www.google.com/favicon.ico"
-                        />
-                        <div class="text-sm text-gray-500">网站图标的URL地址</div>
+                    <a-form-item
+                        label="图标URL"
+                        :name="['relatedWebsites', websiteIndex, 'icon']"
+                        validate-trigger="change"
+                        :rules="[{ validator: validateIconUrl }]"
+                    >
+                        <div class="flex items-center gap-2">
+                            <a-input
+                                v-model:value="website.icon"
+                                placeholder="例如: https://www.google.com/favicon.ico"
+                            />
+                            <div
+                                v-if="website.icon"
+                                class="flex h-8 w-8 items-center justify-center rounded border"
+                            >
+                                <img
+                                    :src="website.icon"
+                                    class="h-4 w-4 object-contain"
+                                    alt="Website Icon"
+                                />
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-500">
+                            网站图标的URL地址，建议使用 16x16 或 32x32 的图标
+                        </div>
                     </a-form-item>
 
                     <a-form-item
