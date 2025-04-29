@@ -21,4 +21,9 @@ export async function registerRulesServices() {
         const rule = e.data;
         return rulesManager.updateRule(rule);
     });
+
+    onMessage('saveRules', async (e) => {
+        const newRules = e.data.rules;
+        return rulesManager.saveRules(newRules);
+    });
 }

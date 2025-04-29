@@ -45,6 +45,10 @@ class RulesManager {
             throw new Error('Rule not found');
         }
     }
+
+    async saveRules(rules: JsonRule[]) {
+        await storage.setItem('local:rules', rules);
+    }
 }
 
 const rulesManager = new RulesManager();

@@ -25,6 +25,7 @@
         "ant-design-vue": "^4.2.6",
         "fuse.js": "^7.1.0",
         "lodash-es": "^4.17.21",
+        "monaco-editor": "^0.52.2",
         "type-fest": "^4.40.1",
         "vue": "^3.5.13",
         "vue-router": "^4.5.1",
