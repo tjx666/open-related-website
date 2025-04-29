@@ -7,12 +7,14 @@ import AntdConfigProvider from '@/components/AntdConfigProvider.vue';
 import { Command } from '@/constants/commands';
 import { SHORTCUT_PAGE_PATH } from '@/constants/path';
 
+import { i18n } from '#i18n';
+
 const runtimeId = ref(browser.runtime.id);
 const shortcut = ref('');
 const formattedKeys = ref<string[]>([]);
 
 /**
- * 获取实时快捷键
+ * Get the current shortcut key in real time
  */
 const getShortcut = async () => {
     try {
@@ -20,19 +22,19 @@ const getShortcut = async () => {
         const toggleCommand = commands.find((cmd) => cmd.name === Command.ToggleExtension);
         shortcut.value = toggleCommand?.shortcut || 'Alt+O';
 
-        // 格式化快捷键为小写且分离键位
+        // Format shortcut to uppercase and split into keys
         if (shortcut.value) {
             formattedKeys.value = shortcut.value.toUpperCase().split('');
         }
     } catch (error) {
-        console.error('获取快捷键失败:', error);
+        console.error('getShortcut error:', error);
         shortcut.value = 'Alt+O';
         formattedKeys.value = ['alt', 'o'];
     }
 };
 
 /**
- * 打开 Chrome 快捷键设置页面
+ * Open the Chrome shortcut settings page
  */
 const openShortcutSettings = () => {
     browser.tabs.create({ url: SHORTCUT_PAGE_PATH });
@@ -48,7 +50,7 @@ onMounted(() => {
         <div class="flex h-40 w-80 items-center justify-center">
             <ul class="w-full px-4">
                 <li class="mb-2 flex items-center justify-between">
-                    <span>快捷键：</span>
+                    <span>{{ i18n.t('popup.shortcut') }}</span>
                     <div class="flex items-center">
                         <div class="flex items-center">
                             <template v-for="(key, index) in formattedKeys" :key="index">
@@ -58,7 +60,7 @@ onMounted(() => {
                         </div>
                         <button
                             class="ml-2 cursor-pointer text-blue-500 hover:text-blue-700"
-                            title="设置快捷键"
+                            :title="i18n.t('popup.setShortcut')"
                             @click="openShortcutSettings"
                         >
                             <svg
@@ -82,11 +84,12 @@ onMounted(() => {
                 </li>
 
                 <li class="mt-4">
-                    自定义规则：<a
+                    {{ i18n.t('popup.customRules')
+                    }}<a
                         class="text-blue-500 underline"
                         :href="`chrome-extension://${runtimeId}/options.html`"
                         target="_blank"
-                        >点击这里</a
+                        >{{ i18n.t('popup.clickHere') }}</a
                     >
                 </li>
 
@@ -96,7 +99,7 @@ onMounted(() => {
                         class="ml-2 text-blue-500 underline"
                         href="https://github.com/tjx666/open-related-website"
                         target="_blank"
-                        >点个 star 支持一下吧</a
+                        >{{ i18n.t('popup.giveStar') }}</a
                     >
                 </li>
             </ul>

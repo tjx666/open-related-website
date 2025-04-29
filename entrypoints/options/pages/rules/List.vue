@@ -8,6 +8,8 @@ import { sendMessage } from 'webext-bridge/options';
 
 import type { JsonRule, RuleItem } from '@/entrypoints/background/rules/BaseRule';
 
+import { i18n } from '#i18n';
+
 import { useRules } from '../../composables/useRules';
 import { useStorage } from '../../composables/useStorage';
 
@@ -17,14 +19,14 @@ const { rules: dataSource, refresh: refreshRules } = useRules(showBuiltinRules);
 const loading = ref(false);
 
 /**
- * 编辑规则
+ * Edit rule
  */
 function editRule(ruleName: string) {
     router.push(`/rules/edit/${ruleName}`);
 }
 
 /**
- * 切换规则启用状态
+ * Toggle rule enable status
  */
 async function toggleRuleStatus(rule: RuleItem, enabled: boolean) {
     try {
@@ -33,37 +35,43 @@ async function toggleRuleStatus(rule: RuleItem, enabled: boolean) {
             ...rule,
             isEnabled: enabled,
         } as JsonRule);
-        message.success(`规则${enabled ? '启用' : '禁用'}成功`);
+        message.success(
+            i18n.t(
+                enabled
+                    ? 'options.rules.list.ruleEnabledSuccess'
+                    : 'options.rules.list.ruleDisabledSuccess',
+            ),
+        );
         await refreshRules();
     } catch (error) {
-        console.error('更新规则状态失败:', error);
-        message.error('更新规则状态失败');
+        console.error('Failed to update rule status:', error);
+        message.error(i18n.t('options.rules.list.updateRuleStatusFailed'));
     } finally {
         loading.value = false;
     }
 }
 
 /**
- * 删除规则
+ * Delete rule
  */
 function confirmDelete(ruleName: string) {
     Modal.confirm({
-        title: '确认删除',
+        title: i18n.t('options.rules.list.confirmDelete'),
         icon: () => h(ExclamationCircleOutlined),
-        content: '确定要删除这条规则吗？删除后将无法恢复。',
-        okText: '删除',
+        content: i18n.t('options.rules.list.deleteConfirmation'),
+        okText: i18n.t('options.rules.list.delete'),
         okType: 'danger',
-        cancelText: '取消',
+        cancelText: i18n.t('options.rules.list.cancel'),
         async onOk() {
             try {
                 loading.value = true;
                 await sendMessage('deleteRule', { name: ruleName });
-                message.success('规则删除成功');
-                // 刷新规则列表
+                message.success(i18n.t('options.rules.list.ruleDeleteSuccess'));
+                // Refresh rule list
                 await refreshRules();
             } catch (error) {
-                console.error('删除规则失败:', error);
-                message.error('删除规则失败');
+                console.error('Failed to delete rule:', error);
+                message.error(i18n.t('options.rules.list.deleteRuleFailed'));
             } finally {
                 loading.value = false;
             }
@@ -78,23 +86,38 @@ function confirmDelete(ruleName: string) {
             <div class="flex items-center">
                 <label class="flex items-center">
                     <a-switch v-model:checked="showBuiltinRules" />
-                    <span class="ml-2">显示内置规则</span>
+                    <span class="ml-2">{{ i18n.t('options.rules.list.showBuiltinRules') }}</span>
                 </label>
             </div>
             <router-link to="/rules/add">
-                <a-button type="primary">添加规则</a-button>
+                <a-button type="primary">{{ i18n.t('options.rules.list.addRule') }}</a-button>
             </router-link>
         </div>
 
         <a-table :data-source="dataSource" :loading="loading" row-key="name">
-            <a-table-column key="name" title="规则名称" data-index="name" />
-            <a-table-column key="description" title="描述" data-index="description" />
-            <a-table-column key="lastModifiedTimestamp" title="最后修改时间">
+            <a-table-column
+                key="name"
+                :title="i18n.t('options.rules.list.ruleName')"
+                data-index="name"
+            />
+            <a-table-column
+                key="description"
+                :title="i18n.t('options.rules.list.description')"
+                data-index="description"
+            />
+            <a-table-column
+                key="lastModifiedTimestamp"
+                :title="i18n.t('options.rules.list.lastModifiedTime')"
+            >
                 <template #default="{ record }">
                     {{ new Date(record.lastModifiedTimestamp).toLocaleString() }}
                 </template>
             </a-table-column>
-            <a-table-column key="actions" title="操作" align="center">
+            <a-table-column
+                key="actions"
+                :title="i18n.t('options.rules.list.actions')"
+                align="center"
+            >
                 <template #default="{ record }">
                     <div class="flex justify-center space-x-3">
                         <a-button
@@ -104,7 +127,7 @@ function confirmDelete(ruleName: string) {
                             @click="editRule(record.name)"
                         >
                             <template #icon><EditOutlined /></template>
-                            编辑
+                            {{ i18n.t('options.rules.list.edit') }}
                         </a-button>
                         <a-button
                             type="link"
@@ -114,12 +137,17 @@ function confirmDelete(ruleName: string) {
                             @click="confirmDelete(record.name)"
                         >
                             <template #icon><DeleteOutlined /></template>
-                            删除
+                            {{ i18n.t('options.rules.list.delete') }}
                         </a-button>
                     </div>
                 </template>
             </a-table-column>
-            <a-table-column key="isEnabled" title="启用状态" align="center" width="100px">
+            <a-table-column
+                key="isEnabled"
+                :title="i18n.t('options.rules.list.enableStatus')"
+                align="center"
+                width="100px"
+            >
                 <template #default="{ record }">
                     <a-switch
                         v-model:checked="record.isEnabled"
@@ -130,9 +158,11 @@ function confirmDelete(ruleName: string) {
             </a-table-column>
             <template #emptyText>
                 <div class="py-8 text-center text-gray-500">
-                    <p>暂无规则</p>
+                    <p>{{ i18n.t('options.rules.list.noRules') }}</p>
                     <router-link to="/rules/add" class="mt-4 block">
-                        <a-button type="primary">添加规则</a-button>
+                        <a-button type="primary">{{
+                            i18n.t('options.rules.list.addRule')
+                        }}</a-button>
                     </router-link>
                 </div>
             </template>

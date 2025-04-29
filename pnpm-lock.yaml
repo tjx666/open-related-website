@@ -17,6 +17,9 @@ importers:
       '@vueuse/core':
         specifier: ^13.1.0
         version: 13.1.0(vue@3.5.13(typescript@5.8.3))
+      '@wxt-dev/i18n':
+        specifier: ^0.2.3
+        version: 0.2.3(wxt@0.20.5(@types/node@22.15.2)(jiti@2.4.2)(lightningcss@1.29.2)(rollup@4.40.0)(yaml@2.7.1))
       ant-design-vue:
         specifier: ^4.2.6
         version: 4.2.6(vue@3.5.13(typescript@5.8.3))
@@ -940,6 +943,14 @@ packages:
 
   '@wxt-dev/browser@0.0.317':
     resolution: {integrity: sha512-tpFr/OJjTlGY7FLIr950fNi9fIBLQQ9pRVDDajeqEMip5LsXFAxpbF4I1GAGUkdTJEghKQ8P5N9XnsAdbPBAOQ==}
+
+  '@wxt-dev/i18n@0.2.3':
+    resolution: {integrity: sha512-2X005PB1r+6sDYMOuZD5hxSOPkogEZZTLB5HEsOotQ5RYXF3c/OOMD+DffVeq+S0yKY2Dmg4Ujfu0Pq4busJYQ==}
+    peerDependencies:
+      wxt: '>=0.19.7'
+    peerDependenciesMeta:
+      wxt:
+        optional: true
 
   '@wxt-dev/storage@1.1.1':
     resolution: {integrity: sha512-H1vYWeoWz03INV4r+sLYDFil88b3rgMMfgGp/EXy3bLbveJeiMiFs/G0bsBN2Ra87Iqlf2oVYRb/ABQpAugbew==}
@@ -4501,6 +4512,14 @@ snapshots:
     dependencies:
       '@types/filesystem': 0.0.36
       '@types/har-format': 1.2.16
+
+  '@wxt-dev/i18n@0.2.3(wxt@0.20.5(@types/node@22.15.2)(jiti@2.4.2)(lightningcss@1.29.2)(rollup@4.40.0)(yaml@2.7.1))':
+    dependencies:
+      chokidar: 3.6.0
+      confbox: 0.1.8
+      fast-glob: 3.3.3
+    optionalDependencies:
+      wxt: 0.20.5(@types/node@22.15.2)(jiti@2.4.2)(lightningcss@1.29.2)(rollup@4.40.0)(yaml@2.7.1)
 
   '@wxt-dev/storage@1.1.1':
     dependencies:

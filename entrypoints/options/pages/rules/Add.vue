@@ -6,12 +6,14 @@ import { sendMessage } from 'webext-bridge/options';
 
 import { RULES_PAGE_PATH } from '@/constants/path';
 
+import { i18n } from '#i18n';
+
 import RuleForm from '../../components/RuleForm.vue';
 
 const router = useRouter();
 
 /**
- * 提交表单
+ * Submit form
  */
 async function handleSubmit(formData: any) {
     await sendMessage('addRule', {
@@ -21,12 +23,16 @@ async function handleSubmit(formData: any) {
         lastModifiedTimestamp: Date.now(),
         ...formData,
     });
-    message.success('规则保存成功');
-    // 保存成功后返回规则列表页
+    message.success(i18n.t('options.rules.add.ruleSavedSuccess'));
+    // Return to the rules list page after saving successfully
     router.push(RULES_PAGE_PATH);
 }
 </script>
 
 <template>
-    <RuleForm page-title="添加自定义规则" submit-button-text="保存规则" :on-submit="handleSubmit" />
+    <RuleForm
+        :page-title="i18n.t('options.rules.add.addCustomRule')"
+        :submit-button-text="i18n.t('options.rules.add.saveRule')"
+        :on-submit="handleSubmit"
+    />
 </template>

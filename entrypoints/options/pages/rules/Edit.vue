@@ -7,9 +7,11 @@ import { sendMessage } from 'webext-bridge/options';
 
 import { RULES_PAGE_PATH } from '@/constants/path';
 
+import { i18n } from '#i18n';
+
 import RuleForm from '../../components/RuleForm.vue';
 
-// 定义规则表单数据接口
+// Define rule form data interface
 interface FormState {
     name: string;
     description: string;
@@ -31,7 +33,7 @@ const initialFormData = ref<FormState | null>(null);
 const loading = ref(true);
 
 /**
- * 获取规则详情
+ * Get rule details
  */
 async function loadRuleDetail() {
     try {
@@ -40,16 +42,16 @@ async function loadRuleDetail() {
         const rule = allRules.find((r) => r.name === ruleName);
 
         if (!rule) {
-            message.error('规则不存在');
+            message.error(i18n.t('options.rules.edit.ruleNotExist'));
             router.push(RULES_PAGE_PATH);
             return;
         }
 
-        // 转换成表单数据
+        // Convert to form data
         initialFormData.value = rule as unknown as FormState;
     } catch (error) {
-        console.error('获取规则详情失败:', error);
-        message.error('获取规则详情失败');
+        console.error('Failed to get rule details:', error);
+        message.error(i18n.t('options.rules.edit.failedToGetRuleDetails'));
         router.push(RULES_PAGE_PATH);
     } finally {
         loading.value = false;
@@ -57,12 +59,12 @@ async function loadRuleDetail() {
 }
 
 /**
- * 提交表单
+ * Submit form
  */
 async function handleSubmit(formData: FormState) {
     if (!initialFormData.value) return;
 
-    // 使用 sendMessage 将规则发送到后台
+    // Use sendMessage to send the rule to the background
     await sendMessage('updateRule', {
         language: 'json',
         isBuiltin: (initialFormData.value as any).isBuiltin || false,
@@ -70,12 +72,12 @@ async function handleSubmit(formData: FormState) {
         lastModifiedTimestamp: Date.now(),
         ...formData,
     });
-    message.success('规则更新成功');
-    // 保存成功后返回规则列表页
+    message.success(i18n.t('options.rules.edit.ruleUpdateSuccess'));
+    // Return to the rules list page after successful save
     router.push(RULES_PAGE_PATH);
 }
 
-// 组件挂载时加载规则详情
+// Load rule details when component is mounted
 onMounted(() => {
     loadRuleDetail();
 });
@@ -87,8 +89,8 @@ onMounted(() => {
     </div>
     <RuleForm
         v-else-if="initialFormData"
-        page-title="编辑规则"
-        submit-button-text="更新规则"
+        :page-title="i18n.t('options.rules.edit.editRule')"
+        :submit-button-text="i18n.t('options.rules.edit.updateRule')"
         :initial-form-data="initialFormData"
         :on-submit="handleSubmit"
     />

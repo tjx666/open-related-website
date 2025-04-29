@@ -10,6 +10,8 @@ import { sendMessage } from 'webext-bridge/options';
 
 import { JsonRule } from '@/background/rules/BaseRule';
 
+import { i18n } from '#i18n';
+
 import { rulesSchema } from './rulesSchema';
 
 const monacoEl = ref<HTMLDivElement>();
@@ -19,104 +21,105 @@ const loading = ref(true);
 const getEditor = () => {
     return toRaw(_editorVueWrapper.value);
 };
-
 /**
- * 加载用户规则
+ * Load user rules
  */
 async function loadUserRules() {
     try {
         const allRules = await sendMessage('getRules', {});
-        // 只显示非内置规则（用户规则）
+        // Only display non-builtin rules (user rules)
         const userRules = allRules.filter((rule) => !rule.isBuiltin);
 
-        // 将规则格式化为漂亮的 JSON 字符串
+        // Format rules as pretty JSON string
         const initialContent = JSON.stringify(userRules, null, 4);
 
-        // 如果编辑器已初始化，更新内容
+        // If editor is initialized, update content
         if (_editorVueWrapper.value) {
             getEditor()!.setValue(initialContent);
         }
     } catch (error) {
-        console.error('获取规则失败:', error);
-        message.error('获取规则失败');
+        console.error('Failed to get rules:', error);
+        message.error(i18n.t('options.rulesEditor.getRulesFailed'));
     }
 }
 
 /**
- * 检查编辑器是否有错误
+ * Check if the editor has errors
  */
 function hasEditorErrors(): boolean {
     if (!_editorVueWrapper.value) return true;
 
-    // 获取编辑器中所有的标记（错误、警告等）
+    // Get all markers in the editor (errors, warnings, etc.)
     const model = getEditor()?.getModel();
     if (!model) return true;
 
     const markers = monaco.editor.getModelMarkers({ resource: model.uri });
 
-    // 只关注错误级别的标记
+    // Only care about error level markers
     return markers.some((marker) => marker.severity === monaco.MarkerSeverity.Error);
 }
 
 /**
- * 保存规则
+ * Save rules
  */
 async function saveRules() {
     if (!_editorVueWrapper.value) return;
 
     loading.value = true;
     try {
-        // 检查编辑器是否有错误
+        // Check if the editor has errors
         if (hasEditorErrors()) {
-            message.error('编辑器中存在错误，请修复后再保存');
+            message.error(i18n.t('options.rulesEditor.fixErrorsBeforeSaving'));
             return;
         }
 
         try {
             const content = getEditor()!.getValue();
 
-            // 尝试解析 JSON
+            // Try to parse JSON
             const parsedRules = JSON.parse(content) as JsonRule[];
 
-            // 验证每个规则中的 url 和 urlPattern
-            // 额外验证 urlPattern 和 url 逻辑，确保至少有一个存在
-            let hasUrlError = false;
+            console.log('aaaaaa');
+
+            // Validate url and urlPattern in each rule
+            // Extra validation to ensure at least one of urlPattern or url exists
             for (const [i, rule] of parsedRules.entries() as unknown as Array<[number, JsonRule]>) {
                 if (rule.relatedWebsites) {
                     for (let j = 0; j < rule.relatedWebsites.length; j++) {
                         const website = rule.relatedWebsites[j];
                         if (!website.url && !website.urlPattern) {
                             message.error(
-                                `规则 ${i + 1} 的相关网站 ${j + 1} 必须指定 url 或 urlPattern 中的一个`,
+                                i18n.t('options.rulesEditor.specifyUrlOrPattern', [
+                                    rule.name || i + 1,
+                                    website.title || j + 1,
+                                ]),
                             );
-                            hasUrlError = true;
+                            return;
                         }
                     }
                 }
             }
 
-            if (hasUrlError) {
-                return;
-            }
+            console.log('bbbbbb');
 
-            // 验证规则名称不能重复
+            // Validate rule names must be unique
             const ruleNames = parsedRules.map((rule) => rule.name);
             const uniqueRuleNames = new Set(ruleNames);
             if (uniqueRuleNames.size !== ruleNames.length) {
-                message.error('规则名称不能重复');
+                message.error(i18n.t('options.rulesEditor.duplicateRuleNames'));
                 return;
             }
 
             await sendMessage('saveRules', { rules: parsedRules });
-            message.success('规则保存成功');
+            message.success(i18n.t('options.rulesEditor.rulesSavedSuccess'));
             await loadUserRules();
         } catch (error) {
-            console.error('解析 JSON 失败:', error);
-            message.error('JSON 格式错误，请检查');
+            console.error('Failed to parse JSON:', error);
+            message.error(i18n.t('options.rulesEditor.jsonFormatError'));
         }
     } catch (error) {
-        console.error('保存规则失败:', error);
-        message.error('保存规则失败');
+        console.error('Failed to save rules:', error);
+        message.error(i18n.t('options.rulesEditor.saveRulesFailed'));
     } finally {
         loading.value = false;
     }
@@ -125,9 +128,9 @@ async function saveRules() {
 onMounted(async () => {
     loading.value = true;
     try {
-        // 配置编辑器
+        // Configure editor
         if (monacoEl.value) {
-            // 创建编辑器
+            // Create editor
             _editorVueWrapper.value = monaco.editor.create(monacoEl.value, {
                 value: '[]',
                 language: 'json',
@@ -137,7 +140,7 @@ onMounted(async () => {
                 automaticLayout: true,
             });
 
-            // 配置 JSON 语言设置
+            // Configure JSON language settings
             monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
                 validate: true,
                 allowComments: false,
@@ -154,8 +157,8 @@ onMounted(async () => {
             await loadUserRules();
         }
     } catch (error) {
-        console.error('初始化编辑器失败:', error);
-        message.error('初始化编辑器失败');
+        console.error('Failed to initialize editor:', error);
+        message.error(i18n.t('options.rulesEditor.initEditorFailed'));
     } finally {
         loading.value = false;
     }
@@ -171,8 +174,10 @@ onBeforeUnmount(() => {
 <template>
     <div class="flex h-screen flex-col">
         <div class="flex h-16 items-center justify-between border-b px-8">
-            <h1 class="text-lg font-semibold">规则编辑器</h1>
-            <a-button type="primary" :loading="loading" @click="saveRules">保存规则</a-button>
+            <h1 class="text-lg font-semibold">{{ i18n.t('options.rulesEditor.title') }}</h1>
+            <a-button type="primary" :loading="loading" @click="saveRules">{{
+                i18n.t('options.rulesEditor.saveRules')
+            }}</a-button>
         </div>
 
         <div v-if="loading && !_editorVueWrapper" class="flex h-full items-center justify-center">
@@ -180,18 +185,18 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="mb-4 px-8 pt-4 text-sm text-gray-500">
-            <h2 class="pb-4">在此编辑器中，您可以直接编辑、导入和导出所有用户规则。</h2>
+            <h2 class="pb-4">{{ i18n.t('options.rulesEditor.description') }}</h2>
             <ul class="list-disc">
                 <li>
-                    <p>规则采用 JSON 格式，支持 json schema 验证，hover 到字段上会显示描述。</p>
+                    <p>{{ i18n.t('options.rulesEditor.jsonFormatTip') }}</p>
                 </li>
 
                 <li>
-                    <p>每个相关网站必须至少指定 url 或 urlPattern 中的一个。</p>
+                    <p>{{ i18n.t('options.rulesEditor.urlPatternTip') }}</p>
                 </li>
 
                 <li>
-                    <p>规则名称不能重复。</p>
+                    <p>{{ i18n.t('options.rulesEditor.uniqueNameTip') }}</p>
                 </li>
             </ul>
         </div>

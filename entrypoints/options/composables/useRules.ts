@@ -20,7 +20,7 @@ export function useRules(showBuiltin: Ref<boolean>) {
         updateRules();
     });
 
-    // 初始化时加载规则
+    // Load rules on initialization
     onMounted(() => {
         updateRules();
     });

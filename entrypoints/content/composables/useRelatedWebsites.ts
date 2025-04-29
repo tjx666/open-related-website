@@ -24,23 +24,23 @@ export function useRelatedWebsites(searchStr: Ref<string>) {
 
     const filteredWebsites = computed(() => {
         if (searchStr.value.trim() === '') {
-            // 当没有搜索条件时，按 level 降序排列
+            // When there is no search term, sort by level in descending order
             return [...relatedWebsites.value].sort((a, b) => (b.level || 0) - (a.level || 0));
         }
 
-        // 执行模糊搜索
+        // Perform fuzzy search
         const fuseResults = new Fuse(relatedWebsites.value, {
             keys: ['title', 'description'],
         }).search(searchStr.value);
 
-        // 对搜索结果先按相似度排序，相似度相同时按 level 降序排序
+        // Sort search results by similarity first, if similarity is the same then by level descending
         return fuseResults
             .sort((a, b) => {
-                // 首先按相似度排序（score 越小表示相似度越高）
+                // First sort by similarity (smaller score means higher similarity)
                 const scoreDiff = (a.score || 0) - (b.score || 0);
                 if (scoreDiff !== 0) return scoreDiff;
 
-                // 相似度相同时按 level 降序排序
+                // If similarity is the same, sort by level descending
                 return (b.item.level || 0) - (a.item.level || 0);
             })
             .map((item) => item.item);

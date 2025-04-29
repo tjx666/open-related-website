@@ -5,7 +5,7 @@ export function parseWebsites() {
         const { url } = data;
 
         try {
-            // 使用 fetch 获取网页内容
+            // Use fetch to get webpage content
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
@@ -14,12 +14,12 @@ export function parseWebsites() {
             });
 
             if (!response.ok) {
-                throw new Error(`获取网站数据失败: ${response.status}`);
+                throw new Error(`Failed to fetch website data: ${response.status}`);
             }
 
             const html = await response.text();
 
-            // 提取标题 - 使用简单的字符串操作
+            // Extract title - use simple string operations
             let title = new URL(url).hostname;
             const titleStart = html.indexOf('<title');
             if (titleStart !== -1) {
@@ -32,13 +32,13 @@ export function parseWebsites() {
                 }
             }
 
-            // 提取描述
+            // Extract description
             let description = '';
             const metaStart = html.indexOf('name="description"');
             if (metaStart !== -1) {
                 const contentStart = html.indexOf('content="', metaStart);
                 if (contentStart !== -1) {
-                    const contentValueStart = contentStart + 9; // 'content="' 的长度
+                    const contentValueStart = contentStart + 9; // length of 'content="'
                     const contentEnd = html.indexOf('"', contentValueStart);
                     if (contentEnd !== -1) {
                         description = html.slice(contentValueStart, contentEnd).trim();
@@ -46,23 +46,23 @@ export function parseWebsites() {
                 }
             }
 
-            // 提取图标
+            // Extract icon
             let iconUrl = '';
             const faviconStart = html.indexOf('rel="icon"') || html.indexOf('rel="shortcut icon"');
             if (faviconStart !== -1) {
                 const hrefStart = html.indexOf('href="', faviconStart);
                 if (hrefStart !== -1) {
-                    const hrefValueStart = hrefStart + 6; // 'href="' 的长度
+                    const hrefValueStart = hrefStart + 6; // length of 'href="'
                     const hrefEnd = html.indexOf('"', hrefValueStart);
                     if (hrefEnd !== -1) {
                         const iconPath = html.slice(hrefValueStart, hrefEnd).trim();
-                        // 处理相对路径
+                        // Handle relative path
                         iconUrl = new URL(iconPath, url).href;
                     }
                 }
             }
 
-            // 如果没有找到图标，使用默认的 favicon.ico
+            // If no icon found, use default favicon.ico
             if (!iconUrl) {
                 iconUrl = new URL('/favicon.ico', url).href;
             }
@@ -73,8 +73,8 @@ export function parseWebsites() {
                 iconUrl,
             };
         } catch (error) {
-            console.error('解析网站失败:', error);
-            // 返回默认值
+            console.error('Failed to parse website:', error);
+            // Return default values
             return {
                 title: new URL(url).hostname,
                 description: '',

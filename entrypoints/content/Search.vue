@@ -6,6 +6,8 @@ import { onClickOutside } from '@vueuse/core';
 import type { RelatedWebsite } from '@/background/rules/BaseRule';
 import { useEscListener } from '@/hooks/useEscListener';
 
+import { i18n } from '#i18n';
+
 import { useRelatedWebsites } from './composables/useRelatedWebsites';
 import { exit } from './toggleExtension';
 
@@ -18,12 +20,12 @@ const showEmptyState = computed(
 );
 
 /**
- * 确保搜索框聚焦
+ * Ensure the search input is focused
  */
 const focusSearchInput = async () => {
     await nextTick();
     if (searchInputRef.value) {
-        // 使用 setTimeout 确保在 DOM 完全渲染后聚焦
+        // Use setTimeout to ensure DOM is fully rendered before focusing
         setTimeout(() => {
             searchInputRef.value?.focus();
         }, 50);
@@ -34,46 +36,46 @@ onMounted(focusSearchInput);
 
 function openWebsite(site: RelatedWebsite) {
     const target = site.openInNewTab ? '_blank' : '_self';
-    // 优先使用 urlPattern 如果存在
+    // Prefer urlPattern if exists
     if (site.urlPattern) {
         try {
-            // 处理 urlPattern 中的占位符
+            // Process placeholders in urlPattern
             const processedUrl = processUrlPattern(site.urlPattern);
             window.open(processedUrl, target);
             return;
         } catch (error) {
-            console.error('处理 URL 模板失败:', error);
-            // 如果处理失败，回退到固定 URL
+            console.error('Failed to process URL template:', error);
+            // Fallback to static URL if processing fails
         }
     }
 
-    // 使用固定 URL
+    // Use static URL
     window.open(site.url, target);
 }
 
 /**
- * 处理 URL 模板中的占位符 支持的占位符：
+ * Process placeholders in URL template. Supported placeholders:
  *
- * - {urlParam:参数名} - 获取当前 URL 中的查询参数
- * - {urlPathSegment:索引} - 获取 URL path 中的片段（按 / 分割，0 为第一个；不带索引则返回完整 path）
- * - {dom:选择器} - 获取页面 DOM 元素的内容
- * - {repoPath} - 获取当前页面的仓库路径（仅在 GitHub/GitLab 等平台上可用）
+ * - {urlParam:parameterName} - Get query parameter from current URL
+ * - {urlPathSegment:index} - Get segment from URL path (split by /, 0 is first; if index omitted returns full path)
+ * - {dom:selector} - Get content from page DOM element
+ * - {repoPath} - Get repository path of current page (only available on GitHub/GitLab, etc.)
  */
 function processUrlPattern(urlPattern: string): string {
     return urlPattern.replaceAll(/\{([^}]+)\}/g, (match, content) => {
         const [type, param] = content.split(':');
 
         if (type === 'urlParam') {
-            // 从当前 URL 中提取查询参数
+            // Extract query parameter from current URL
             const url = new URL(globalThis.location.href);
             return url.searchParams.get(param) || '';
         }
 
         if (type === 'urlPathSegment') {
-            // 从 URL path 中提取参数
+            // Extract parameter from URL path
             const url = new URL(globalThis.location.href);
             const pathParts = url.pathname.split('/').filter(Boolean);
-            // 如果没有提供索引，返回完整路径
+            // If index is not provided, return full path
             if (!param) {
                 return url.pathname;
             }
@@ -82,7 +84,7 @@ function processUrlPattern(urlPattern: string): string {
         }
 
         if (type === 'dom') {
-            // 从 DOM 中提取内容
+            // Extract content from DOM
             const element = document.querySelector(param);
             return element ? element.textContent || '' : '';
         }
@@ -99,7 +101,7 @@ function processUrlPattern(urlPattern: string): string {
             return '';
         }
 
-        // 未识别的占位符类型，保持原样
+        // Unrecognized placeholder type, keep original
         return match;
     });
 }
@@ -167,7 +169,7 @@ onClickOutside(main, exit);
                     ref="searchInputRef"
                     v-model="searchStr"
                     class="block w-full border-0 border-b border-gray-200 bg-white py-3 pr-10 pl-10 text-gray-900 placeholder-gray-500 transition-all duration-200 focus:border-gray-400 focus:ring-0 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-gray-600"
-                    placeholder="搜索相关网站... (按 Enter 打开第一个结果)"
+                    :placeholder="i18n.t('content.search.placeholder')"
                     @keydown="handleKeydown"
                 />
                 <button
@@ -180,6 +182,7 @@ onClickOutside(main, exit);
                         class="h-5 w-5"
                         viewBox="0 0 20 20"
                         fill="currentColor"
+                        aria-label="clear search"
                     >
                         <path
                             fill-rule="evenodd"
@@ -191,7 +194,7 @@ onClickOutside(main, exit);
             </div>
 
             <div class="overflow-hidden">
-                <!-- 空结果状态 -->
+                <!-- Empty result state -->
                 <div
                     v-if="showEmptyState"
                     class="px-4 py-8 text-center text-gray-500 dark:text-gray-400"
@@ -201,19 +204,21 @@ onClickOutside(main, exit);
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-label="search"
                     >
                         <path
                             stroke-linecap="round"
                             stroke-linejoin="round"
                             stroke-width="2"
-                            d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                         />
                     </svg>
-                    <p class="mt-4 text-lg">没有找到匹配的结果</p>
-                    <p class="mt-2">请尝试其他搜索关键词</p>
+                    <p class="mt-4 text-lg">{{ i18n.t('content.search.emptyResult') }}</p>
+                    <p class="mt-2">{{ i18n.t('content.search.tryOtherKeywords') }}</p>
                 </div>
 
-                <!-- 结果列表 -->
+                <!-- Result list -->
                 <ul
                     v-else
                     v-auto-animate
@@ -275,20 +280,20 @@ onClickOutside(main, exit);
                     </li>
                 </ul>
 
-                <!-- 键盘操作提示 -->
+                <!-- Keyboard operation hint -->
                 <div
                     v-if="filteredWebsites.length > 0"
                     class="flex justify-between border-t border-gray-200 bg-gray-50 px-4 py-2 text-xs text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
                 >
                     <span
-                        >按
+                        >{{ i18n.t('content.search.enterKeyHint') }}
                         <kbd class="rounded bg-gray-200 px-1 py-0.5 dark:bg-gray-700">Enter</kbd>
-                        快速打开</span
+                        {{ i18n.t('content.search.quickOpen') }}</span
                     >
                     <span
-                        >按
+                        >{{ i18n.t('content.search.escKeyHint') }}
                         <kbd class="rounded bg-gray-200 px-1 py-0.5 dark:bg-gray-700">Esc</kbd>
-                        关闭</span
+                        {{ i18n.t('content.search.close') }}</span
                     >
                 </div>
             </div>
@@ -297,7 +302,7 @@ onClickOutside(main, exit);
 </template>
 
 <style scoped>
-/* 自定义滚动条样式 */
+/* Custom scrollbar styles */
 ul::-webkit-scrollbar {
     width: 8px;
 }
@@ -315,7 +320,7 @@ ul::-webkit-scrollbar-thumb:hover {
     background-color: rgba(156, 163, 175, 0.8);
 }
 
-/* 渐入动画 */
+/* Fade-in animation */
 .fixed {
     animation: fade-in 0.2s ease-out;
 }

@@ -6,6 +6,8 @@ import { CodeOutlined, SettingOutlined } from '@ant-design/icons-vue';
 import AntdConfigProvider from '@/components/AntdConfigProvider.vue';
 import { RULES_EDITOR_PAGE_PATH, RULES_PAGE_PATH } from '@/constants/path';
 
+import { i18n } from '#i18n';
+
 const router = useRouter();
 
 function navigateToRules() {
@@ -26,13 +28,13 @@ function navigateToRulesEditor() {
                         <template #icon>
                             <SettingOutlined />
                         </template>
-                        规则管理
+                        {{ i18n.t('options.rulesManagement') }}
                     </a-menu-item>
                     <a-menu-item key="rules-editor" @click="navigateToRulesEditor">
                         <template #icon>
                             <CodeOutlined />
                         </template>
-                        规则编辑器
+                        {{ i18n.t('options.rulesEditor.title') }}
                     </a-menu-item>
                 </a-menu>
             </a-layout-sider>

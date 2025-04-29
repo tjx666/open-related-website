@@ -10,6 +10,7 @@ import { Command } from './constants/commands';
 
 export default defineConfig({
     manifest: {
+        default_locale: 'en',
         name: 'Open Related Website',
         permissions: ['storage', 'commands'],
         commands: {
@@ -21,6 +22,7 @@ export default defineConfig({
             },
         },
     },
+    modules: ['@wxt-dev/i18n/module'],
     webExt: {
         chromiumArgs: [
             // '--auto-open-devtools-for-tabs',

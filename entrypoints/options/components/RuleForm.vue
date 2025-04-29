@@ -15,7 +15,9 @@ import { sendMessage } from 'webext-bridge/options';
 
 import { RULES_PAGE_PATH } from '@/constants/path';
 
-// 表单数据接口
+import { i18n } from '#i18n';
+
+// Form data interface
 interface FormState {
     name: string;
     description: string;
@@ -38,10 +40,10 @@ const props = defineProps<{
     onSubmit: (formData: any) => Promise<void>;
 }>();
 
-// 路由
+// Router
 const router = useRouter();
 
-// 表单数据
+// Form data
 const formState: UnwrapRef<FormState> = reactive(
     props.initialFormData || {
         name: '',
@@ -61,30 +63,30 @@ const formState: UnwrapRef<FormState> = reactive(
     },
 );
 
-// 表单布局
+// Form layout
 const labelCol = { span: 6 };
 const wrapperCol = { span: 18 };
 
-// 已存在的规则名称列表
+// List of existing rule names
 const existingRuleNames = ref<string[]>([]);
 
 /**
- * 获取所有规则名称
+ * Get all rule names
  */
 async function loadExistingRuleNames() {
     try {
         const allRules = await sendMessage('getRules', {});
         existingRuleNames.value = allRules.map((rule) => rule.name);
     } catch (error) {
-        console.error('获取规则列表失败:', error);
+        console.error('Failed to get rule list:', error);
     }
 }
 
 /**
- * 检查规则名称是否已存在
+ * Check if the rule name already exists
  */
 function validateRuleName(value: string) {
-    // 如果是编辑模式且名称没变，则允许通过
+    // If in edit mode and the name hasn't changed, allow it to pass
     if (props.initialFormData && props.initialFormData.name === value) {
         return true;
     }
@@ -92,7 +94,7 @@ function validateRuleName(value: string) {
 }
 
 /**
- * 验证图标 URL 是否有效
+ * Validate if the icon URL is valid
  */
 async function validateIconUrl(_rule: Rule, value: string) {
     if (!value) return;
@@ -100,29 +102,29 @@ async function validateIconUrl(_rule: Rule, value: string) {
     return new Promise<void>((resolve, reject) => {
         const img = document.createElement('img');
         img.addEventListener('load', () => resolve());
-        img.addEventListener('error', () => reject('图标加载失败，请检查URL是否正确'));
+        img.addEventListener('error', () => reject(i18n.t('options.rules.form.iconLoadFailed')));
         img.src = value;
     });
 }
 
-// 表单验证规则
+// Form validation rules
 const rules: Record<string, Rule[]> = {
     name: [
-        { required: true, message: '请输入规则名称' },
+        { required: true, message: i18n.t('options.rules.form.nameRequired') },
         {
             validator: (rule: Rule, value: string) => {
                 if (!validateRuleName(value)) {
-                    return Promise.reject('规则名称已存在，请使用其他名称');
+                    return Promise.reject(i18n.t('options.rules.form.nameExists'));
                 }
                 return Promise.resolve();
             },
         },
     ],
-    description: [{ required: true, message: '请输入规则描述' }],
+    description: [{ required: true, message: i18n.t('options.rules.form.descriptionRequired') }],
     matchPageRegexpPatterns: [
         {
             required: true,
-            message: '请至少添加一个URL匹配模式',
+            message: i18n.t('options.rules.form.patternRequired'),
             type: 'array',
         },
     ],
@@ -131,84 +133,84 @@ const rules: Record<string, Rule[]> = {
 const formRef = ref();
 const submitLoading = ref(false);
 
-// 添加解析网站信息的方法
+// Add method for parsing website information
 const parsingWebsite = ref(false);
 
 /**
- * 解析网站信息
+ * Parse website information
  */
 async function parseWebsiteInfo(index: number, urlType: 'url' | 'urlPattern') {
     const website = formState.relatedWebsites[index];
     const urlValue = urlType === 'url' ? website.url : website.urlPattern;
 
     if (!urlValue) {
-        message.warning('请先输入URL');
+        message.warning(i18n.t('options.rules.form.enterUrlFirst'));
         return;
     }
 
     try {
         parsingWebsite.value = true;
 
-        // 提取域名部分
+        // Extract domain part
         let domainUrl = urlValue;
 
-        // 处理占位符：移除所有 {xxx} 格式的占位符
+        // Handle placeholders: remove all placeholders in {xxx} format
         domainUrl = domainUrl.replaceAll(/\{[^}]+\}/g, '');
 
-        // 尝试创建 URL 对象并获取域名
+        // Try to create URL object and get domain
         try {
-            // 确保 URL 有协议前缀
+            // Ensure URL has protocol prefix
             if (!domainUrl.startsWith('http://') && !domainUrl.startsWith('https://')) {
                 domainUrl = `https://${domainUrl}`;
             }
 
             const urlObj = new URL(domainUrl);
-            // 只使用域名部分构建 URL
+            // Use only domain part to build URL
             domainUrl = urlObj.port
                 ? `${urlObj.protocol}//${urlObj.hostname}:${urlObj.port}`
                 : `${urlObj.protocol}//${urlObj.hostname}`;
         } catch (error) {
-            // URL 解析失败，使用原始输入
-            console.error('URL解析失败:', error);
+            // URL parsing failed, use original input
+            console.error('URL parsing failed:', error);
         }
 
-        // 发送消息到后台解析网站信息
+        // Send message to background to parse website information
         const info = await sendMessage('parseWebsites', { url: domainUrl });
 
-        // 更新表单数据
+        // Update form data
         if (info) {
             website.title = website.title || info.title;
             website.description = website.description || info.description;
             website.icon = website.icon || info.iconUrl;
 
-            message.success('网站信息解析成功');
+            message.success(i18n.t('options.rules.form.parseSuccess'));
         } else {
-            message.warning('无法获取网站信息');
+            message.warning(i18n.t('options.rules.form.parseFailed'));
         }
     } catch (error) {
-        console.error('解析网站失败:', error);
-        message.error('解析网站失败，请检查URL是否有效');
+        console.error('Failed to parse website:', error);
+        message.error(i18n.t('options.rules.form.parseError'));
     } finally {
         parsingWebsite.value = false;
     }
 }
 
 /**
- * 添加 URL 匹配模式
+ * Add URL match pattern
  */
 function addMatchPattern() {
     formState.matchPageRegexpPatterns.push('');
 }
 
 /**
- * 删除 URL 匹配模式
+ * Remove URL match pattern
  */
 function removeMatchPattern(index: number) {
     formState.matchPageRegexpPatterns.splice(index, 1);
 }
 
 /**
- * 添加相关网站
+ * Add related website
  */
 function addRelatedWebsite() {
     formState.relatedWebsites.push({
@@ -223,14 +225,14 @@ function addRelatedWebsite() {
 }
 
 /**
- * 删除相关网站
+ * Remove related website
  */
 function removeRelatedWebsite(index: number) {
     formState.relatedWebsites.splice(index, 1);
 }
 
 /**
- * 自定义 URL 验证：确保 URL 模板和固定 URL 至少填写一个
+ * Custom URL validation: Ensure at least one of URL template and fixed URL is filled
  */
 function validateUrl(rule: any, value: string, callback: (error?: string) => void) {
     const fieldPath = rule.field as string;
@@ -238,14 +240,14 @@ function validateUrl(rule: any, value: string, callback: (error?: string) => voi
     const website = formState.relatedWebsites[index];
 
     if (!website.urlPattern && !website.url) {
-        callback('URL模板和固定URL必须至少填写一个');
+        callback(i18n.t('options.rules.form.urlOrPatternRequired'));
     } else {
         callback();
     }
 }
 
 /**
- * 提交表单
+ * Submit form
  */
 async function handleSubmit() {
     submitLoading.value = true;
@@ -254,10 +256,10 @@ async function handleSubmit() {
         const ruleData = toRaw(formState);
         await props.onSubmit(ruleData);
     } catch (error) {
-        console.error('表单验证失败:', error);
-        message.error('请检查表单填写是否完整');
+        console.error('Form validation failed:', error);
+        message.error(i18n.t('options.rules.form.validationFailed'));
 
-        // 滚动到第一个错误字段
+        // Scroll to the first error field
         nextTick(() => {
             const firstErrorEl = document.querySelector('.ant-form-item-has-error');
             if (firstErrorEl) {
@@ -270,22 +272,22 @@ async function handleSubmit() {
 }
 
 /**
- * 返回规则列表页
+ * Return to rule list page
  */
 function goBack() {
     router.push(RULES_PAGE_PATH);
 }
 
 /**
- * 打开 Regex101 测试正则表达式
+ * Open Regex101 to test regular expression
  */
 function openRegex101(pattern: string) {
     if (!pattern) {
-        message.info('请先输入正则表达式');
+        message.info(i18n.t('options.rules.form.enterRegexFirst'));
         return;
     }
 
-    // 构建测试字符串，使用一些常见的 URL 样例
+    // Build test string using common URL examples
     const testString = `
 https://github.com/user/repo
 https://github.com/user/repo/tree/main
@@ -298,18 +300,18 @@ https://cn.bing.com/search?q=URL+pattern
 https://example.com/path/to/resource?param1=value1&param2=value2
 `;
 
-    // 直接使用输入的正则表达式，默认添加忽略大小写的 flag
+    // Use the input regular expression directly, default to add case-insensitive flag
     const regex = pattern;
     const flags = 'i';
 
-    // 构建 Regex101 URL
+    // Build Regex101 URL
     const url = `https://regex101.com/?regex=${encodeURIComponent(regex)}&flavor=javascript&flags=${flags}&testString=${encodeURIComponent(testString)}`;
 
-    // 在新标签页中打开
+    // Open in new tab
     window.open(url, '_blank');
 }
 
-// 组件挂载时加载规则列表
+// Load rule list when component is mounted
 onMounted(() => {
     loadExistingRuleNames();
 });
@@ -346,31 +348,35 @@ onMounted(() => {
                 validate-trigger="submit"
             >
                 <!-- 基本信息 -->
-                <a-divider>基本信息</a-divider>
+                <a-divider>{{ i18n.t('options.rules.form.basicInfo') }}</a-divider>
 
-                <a-form-item label="规则名称" name="name">
+                <a-form-item :label="i18n.t('options.rules.form.ruleName')" name="name">
                     <a-input
                         v-model:value="formState.name"
-                        placeholder="例如: search-engine-redirect"
+                        :placeholder="i18n.t('options.rules.form.ruleNamePlaceholder')"
                     />
-                    <div class="text-sm text-gray-500">为规则指定一个唯一的名称</div>
+                    <div class="text-sm text-gray-500">
+                        {{ i18n.t('options.rules.form.ruleNameTip') }}
+                    </div>
                 </a-form-item>
 
-                <a-form-item label="规则描述" name="description">
+                <a-form-item :label="i18n.t('options.rules.form.description')" name="description">
                     <a-textarea
                         v-model:value="formState.description"
-                        placeholder="例如: Redirect searches from Baidu to other engines"
+                        :placeholder="i18n.t('options.rules.form.descriptionPlaceholder')"
                         :rows="2"
                     />
-                    <div class="text-sm text-gray-500">简要描述此规则的用途</div>
+                    <div class="text-sm text-gray-500">
+                        {{ i18n.t('options.rules.form.descriptionTip') }}
+                    </div>
                 </a-form-item>
 
                 <a-form-item
                     v-if="formState.matchPageRegexpPatterns.length === 0"
-                    label="URL匹配正则"
+                    :label="i18n.t('options.rules.form.urlMatchRegex')"
                 >
-                    <a-button type="dashed" @click="addMatchPattern">
-                        <PlusOutlined /> 添加URL匹配模式
+                    <a-button class="flex! items-center" type="dashed" @click="addMatchPattern">
+                        <PlusOutlined /> {{ i18n.t('options.rules.form.addUrlPattern') }}
                     </a-button>
                 </a-form-item>
 
@@ -379,20 +385,26 @@ onMounted(() => {
                     :key="index"
                 >
                     <a-form-item
-                        label="URL匹配正则"
+                        :label="
+                            formState.matchPageRegexpPatterns.length > 1
+                                ? `${i18n.t('options.rules.form.urlMatchRegex')} ${index + 1}`
+                                : i18n.t('options.rules.form.urlMatchRegex')
+                        "
                         :name="['matchPageRegexpPatterns', index]"
-                        :rules="[{ required: true, message: '请输入URL匹配正则表达式' }]"
+                        :rules="[
+                            { required: true, message: i18n.t('options.rules.form.regexRequired') },
+                        ]"
                     >
                         <a-input
                             v-model:value="formState.matchPageRegexpPatterns[index]"
-                            placeholder="例如: https://www\.baidu\.com/s\?.*wd=([^&]+).*"
+                            :placeholder="i18n.t('options.rules.form.regexPlaceholder')"
                         >
                             <template #addonAfter>
                                 <div class="flex gap-1">
                                     <a-button
                                         type="link"
                                         class="px-1"
-                                        title="在 Regex101 测试"
+                                        :title="i18n.t('options.rules.form.testOnRegex101')"
                                         @click="
                                             openRegex101(formState.matchPageRegexpPatterns[index])
                                         "
@@ -422,7 +434,7 @@ onMounted(() => {
                             </template>
                         </a-input>
                         <div v-if="index === 0" class="text-sm text-gray-500">
-                            使用正则表达式匹配页面URL，匹配成功就会推荐下面配置的相关网站。
+                            {{ i18n.t('options.rules.form.regexTip') }}
                         </div>
                     </a-form-item>
                 </template>
@@ -432,13 +444,15 @@ onMounted(() => {
                     :wrapper-col="{ span: 18, offset: 6 }"
                 >
                     <a-button type="dashed" block @click="addMatchPattern">
-                        <PlusOutlined /> 添加URL匹配模式
+                        <PlusOutlined /> {{ i18n.t('options.rules.form.addUrlPattern') }}
                     </a-button>
                 </a-form-item>
 
                 <!-- 相关网站 -->
-                <a-divider>相关网站</a-divider>
-                <div class="mb-4 text-sm text-gray-500">添加当匹配到URL时要显示的相关网站</div>
+                <a-divider>{{ i18n.t('options.rules.form.relatedWebsites') }}</a-divider>
+                <div class="mb-4 text-sm text-gray-500">
+                    {{ i18n.t('options.rules.form.relatedWebsitesTip') }}
+                </div>
 
                 <div
                     v-for="(website, websiteIndex) in formState.relatedWebsites"
@@ -446,31 +460,38 @@ onMounted(() => {
                     class="mb-8 rounded-lg border p-4"
                 >
                     <div class="mb-4 flex items-center justify-between">
-                        <h3 class="text-md font-medium">相关网站 #{{ websiteIndex + 1 }}</h3>
+                        <h3 class="text-md font-medium">
+                            {{ i18n.t('options.rules.form.relatedWebsite') }} #{{
+                                websiteIndex + 1
+                            }}
+                        </h3>
                         <a-button
                             danger
                             :disabled="formState.relatedWebsites.length <= 1 && websiteIndex === 0"
                             @click="removeRelatedWebsite(websiteIndex)"
                         >
-                            删除
+                            {{ i18n.t('options.rules.form.delete') }}
                         </a-button>
                     </div>
 
                     <a-form-item
-                        label="URL模板"
+                        :label="i18n.t('options.rules.form.urlPattern')"
                         :name="['relatedWebsites', websiteIndex, 'urlPattern']"
                         :rules="[
-                            { validator: validateUrl, message: 'URL模板和固定URL必须至少填写一个' },
+                            {
+                                validator: validateUrl,
+                                message: i18n.t('options.rules.form.urlOrPatternRequired'),
+                            },
                         ]"
                     >
                         <div class="flex gap-2">
                             <a-input
                                 v-model:value="website.urlPattern"
-                                placeholder="例如: https://www.google.com/search?q={urlParam:q}"
+                                :placeholder="i18n.t('options.rules.form.urlPatternPlaceholder')"
                             />
                             <a-button
                                 type="primary"
-                                title="自动获取网站信息（标题、描述和图标）"
+                                :title="i18n.t('options.rules.form.parseWebsiteInfoTitle')"
                                 :loading="parsingWebsite"
                                 :disabled="!website.urlPattern"
                                 @click="parseWebsiteInfo(websiteIndex, 'urlPattern')"
@@ -479,30 +500,41 @@ onMounted(() => {
                             </a-button>
                         </div>
                         <div class="text-sm text-gray-500">
-                            支持的占位符：<br />
-                            - {urlParam:参数名} - 获取URL中的查询参数<br />
-                            - {urlPathSegment:索引} - 获取URL
-                            path中的片段（按/分割，0为第一个；不带索引则返回完整path）<br />
-                            - {dom:选择器} - 获取页面DOM元素的内容<br />
-                            - {repoPath} - 获取当前页面的仓库路径（仅在GitHub/GitLab等平台上可用）
+                            <div>
+                                {{ i18n.t('options.rules.form.urlPatternTip').split('- ')[0] }}
+                            </div>
+                            <ul class="ml-5 list-disc">
+                                <li
+                                    v-for="(item, index) in i18n
+                                        .t('options.rules.form.urlPatternTip')
+                                        .split('- ')
+                                        .slice(1)"
+                                    :key="index"
+                                >
+                                    {{ item }}
+                                </li>
+                            </ul>
                         </div>
                     </a-form-item>
 
                     <a-form-item
-                        label="固定URL"
+                        :label="i18n.t('options.rules.form.fixedUrl')"
                         :name="['relatedWebsites', websiteIndex, 'url']"
                         :rules="[
-                            { validator: validateUrl, message: 'URL模板和固定URL必须至少填写一个' },
+                            {
+                                validator: validateUrl,
+                                message: i18n.t('options.rules.form.urlOrPatternRequired'),
+                            },
                         ]"
                     >
                         <div class="flex gap-2">
                             <a-input
                                 v-model:value="website.url"
-                                placeholder="例如: https://www.google.com/"
+                                :placeholder="i18n.t('options.rules.form.fixedUrlPlaceholder')"
                             />
                             <a-button
                                 type="primary"
-                                title="自动获取网站信息（标题、描述和图标）"
+                                :title="i18n.t('options.rules.form.parseWebsiteInfoTitle')"
                                 :loading="parsingWebsite"
                                 :disabled="!website.url"
                                 @click="parseWebsiteInfo(websiteIndex, 'url')"
@@ -511,37 +543,53 @@ onMounted(() => {
                             </a-button>
                         </div>
                         <div class="text-sm text-gray-500">
-                            不支持占位符的固定URL（与URL模板二选一）
+                            {{ i18n.t('options.rules.form.fixedUrlTip') }}
                         </div>
                     </a-form-item>
 
                     <a-form-item
-                        label="标题"
+                        :label="i18n.t('options.rules.form.websiteTitle')"
                         :name="['relatedWebsites', websiteIndex, 'title']"
-                        :rules="[{ required: true, message: '请输入网站标题' }]"
+                        :rules="[
+                            {
+                                required: true,
+                                message: i18n.t('options.rules.form.websiteTitleRequired'),
+                            },
+                        ]"
                     >
                         <a-input
                             v-model:value="website.title"
-                            placeholder="例如: Google Search (Same Query)"
+                            :placeholder="i18n.t('options.rules.form.websiteTitlePlaceholder')"
                         />
-                        <div class="text-sm text-gray-500">在推荐列表中显示的网站标题</div>
+                        <div class="text-sm text-gray-500">
+                            {{ i18n.t('options.rules.form.websiteTitleTip') }}
+                        </div>
                     </a-form-item>
 
                     <a-form-item
-                        label="描述"
+                        :label="i18n.t('options.rules.form.websiteDescription')"
                         :name="['relatedWebsites', websiteIndex, 'description']"
-                        :rules="[{ required: true, message: '请输入网站描述' }]"
+                        :rules="[
+                            {
+                                required: true,
+                                message: i18n.t('options.rules.form.websiteDescriptionRequired'),
+                            },
+                        ]"
                     >
                         <a-textarea
                             v-model:value="website.description"
-                            placeholder="例如: View the same search query on Google"
+                            :placeholder="
+                                i18n.t('options.rules.form.websiteDescriptionPlaceholder')
+                            "
                             :rows="1"
                         />
-                        <div class="text-sm text-gray-500">对网站功能的简短描述</div>
+                        <div class="text-sm text-gray-500">
+                            {{ i18n.t('options.rules.form.websiteDescriptionTip') }}
+                        </div>
                     </a-form-item>
 
                     <a-form-item
-                        label="图标URL"
+                        :label="i18n.t('options.rules.form.iconUrl')"
                         :name="['relatedWebsites', websiteIndex, 'icon']"
                         validate-trigger="change"
                         :rules="[{ validator: validateIconUrl }]"
@@ -549,7 +597,7 @@ onMounted(() => {
                         <div class="flex items-center gap-2">
                             <a-input
                                 v-model:value="website.icon"
-                                placeholder="例如: https://www.google.com/favicon.ico"
+                                :placeholder="i18n.t('options.rules.form.iconUrlPlaceholder')"
                             />
                             <div
                                 v-if="website.icon"
@@ -563,37 +611,39 @@ onMounted(() => {
                             </div>
                         </div>
                         <div class="text-sm text-gray-500">
-                            网站图标的URL地址，建议使用 16x16 或 32x32 的图标
+                            {{ i18n.t('options.rules.form.iconUrlTip') }}
                         </div>
                     </a-form-item>
 
                     <a-form-item
-                        label="新标签页打开"
+                        :label="i18n.t('options.rules.form.openInNewTab')"
                         :name="['relatedWebsites', websiteIndex, 'openInNewTab']"
                     >
                         <a-switch v-model:checked="website.openInNewTab" />
-                        <div class="text-sm text-gray-500">是否在新标签页中打开链接</div>
+                        <div class="text-sm text-gray-500">
+                            {{ i18n.t('options.rules.form.openInNewTabTip') }}
+                        </div>
                     </a-form-item>
 
                     <a-form-item
-                        label="推荐级别"
+                        :label="i18n.t('options.rules.form.recommendationLevel')"
                         :name="['relatedWebsites', websiteIndex, 'level']"
                     >
                         <a-input-number
                             v-model:value="website.level"
                             :min="0"
                             :max="100"
-                            placeholder="0"
+                            :placeholder="i18n.t('options.rules.form.levelPlaceholder')"
                         />
                         <div class="text-sm text-gray-500">
-                            级别越高在推荐列表中排序越靠前（当相似度相同时）
+                            {{ i18n.t('options.rules.form.levelTip') }}
                         </div>
                     </a-form-item>
                 </div>
 
                 <a-form-item :wrapper-col="{ span: 24 }">
                     <a-button type="dashed" block @click="addRelatedWebsite">
-                        <PlusOutlined /> 添加相关网站
+                        <PlusOutlined /> {{ i18n.t('options.rules.form.addRelatedWebsite') }}
                     </a-button>
                 </a-form-item>
             </a-form>
