@@ -12,6 +12,14 @@ declare module 'webext-bridge' {
             { moreRelatedWebsites: RelatedWebsite[] },
             void
         >;
+        parseWebsites: ProtocolWithReturn<
+            { url: string },
+            {
+                title: string;
+                description: string;
+                iconUrl: string;
+            }
+        >;
 
         getRules: ProtocolWithReturn<{}, RuleItem[]>;
         addRule: ProtocolWithReturn<JsonRule, void>;

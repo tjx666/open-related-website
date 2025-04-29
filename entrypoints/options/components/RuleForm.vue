@@ -3,7 +3,12 @@ import type { UnwrapRef } from 'vue';
 import { nextTick, onMounted, reactive, ref, toRaw } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { ArrowLeftOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue';
+import {
+    ArrowLeftOutlined,
+    DeleteOutlined,
+    PlusOutlined,
+    SearchOutlined,
+} from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import type { Rule } from 'ant-design-vue/es/form';
 import { sendMessage } from 'webext-bridge/options';
@@ -125,6 +130,68 @@ const rules: Record<string, Rule[]> = {
 
 const formRef = ref();
 const submitLoading = ref(false);
+
+// 添加解析网站信息的方法
+const parsingWebsite = ref(false);
+
+/**
+ * 解析网站信息
+ */
+async function parseWebsiteInfo(index: number, urlType: 'url' | 'urlPattern') {
+    const website = formState.relatedWebsites[index];
+    const urlValue = urlType === 'url' ? website.url : website.urlPattern;
+
+    if (!urlValue) {
+        message.warning('请先输入URL');
+        return;
+    }
+
+    try {
+        parsingWebsite.value = true;
+
+        // 提取域名部分
+        let domainUrl = urlValue;
+
+        // 处理占位符：移除所有 {xxx} 格式的占位符
+        domainUrl = domainUrl.replaceAll(/\{[^}]+\}/g, '');
+
+        // 尝试创建 URL 对象并获取域名
+        try {
+            // 确保 URL 有协议前缀
+            if (!domainUrl.startsWith('http://') && !domainUrl.startsWith('https://')) {
+                domainUrl = `https://${domainUrl}`;
+            }
+
+            const urlObj = new URL(domainUrl);
+            // 只使用域名部分构建 URL
+            domainUrl = urlObj.port
+                ? `${urlObj.protocol}//${urlObj.hostname}:${urlObj.port}`
+                : `${urlObj.protocol}//${urlObj.hostname}`;
+        } catch (error) {
+            // URL 解析失败，使用原始输入
+            console.error('URL解析失败:', error);
+        }
+
+        // 发送消息到后台解析网站信息
+        const info = await sendMessage('parseWebsites', { url: domainUrl });
+
+        // 更新表单数据
+        if (info) {
+            website.title = website.title || info.title;
+            website.description = website.description || info.description;
+            website.icon = website.icon || info.iconUrl;
+
+            message.success('网站信息解析成功');
+        } else {
+            message.warning('无法获取网站信息');
+        }
+    } catch (error) {
+        console.error('解析网站失败:', error);
+        message.error('解析网站失败，请检查URL是否有效');
+    } finally {
+        parsingWebsite.value = false;
+    }
+}
 
 /**
  * 添加 URL 匹配模式
@@ -390,6 +457,65 @@ onMounted(() => {
                     </div>
 
                     <a-form-item
+                        label="URL模板"
+                        :name="['relatedWebsites', websiteIndex, 'urlPattern']"
+                        :rules="[
+                            { validator: validateUrl, message: 'URL模板和固定URL必须至少填写一个' },
+                        ]"
+                    >
+                        <div class="flex gap-2">
+                            <a-input
+                                v-model:value="website.urlPattern"
+                                placeholder="例如: https://www.google.com/search?q={urlParam:q}"
+                            />
+                            <a-button
+                                type="primary"
+                                title="自动获取网站信息（标题、描述和图标）"
+                                :loading="parsingWebsite"
+                                :disabled="!website.urlPattern"
+                                @click="parseWebsiteInfo(websiteIndex, 'urlPattern')"
+                            >
+                                <template #icon><SearchOutlined /></template>
+                            </a-button>
+                        </div>
+                        <div class="text-sm text-gray-500">
+                            支持的占位符：<br />
+                            - {urlParam:参数名} - 获取URL中的查询参数<br />
+                            - {urlPathSegment:索引} - 获取URL
+                            path中的片段（按/分割，0为第一个；不带索引则返回完整path）<br />
+                            - {dom:选择器} - 获取页面DOM元素的内容<br />
+                            - {repoPath} - 获取当前页面的仓库路径（仅在GitHub/GitLab等平台上可用）
+                        </div>
+                    </a-form-item>
+
+                    <a-form-item
+                        label="固定URL"
+                        :name="['relatedWebsites', websiteIndex, 'url']"
+                        :rules="[
+                            { validator: validateUrl, message: 'URL模板和固定URL必须至少填写一个' },
+                        ]"
+                    >
+                        <div class="flex gap-2">
+                            <a-input
+                                v-model:value="website.url"
+                                placeholder="例如: https://www.google.com/"
+                            />
+                            <a-button
+                                type="primary"
+                                title="自动获取网站信息（标题、描述和图标）"
+                                :loading="parsingWebsite"
+                                :disabled="!website.url"
+                                @click="parseWebsiteInfo(websiteIndex, 'url')"
+                            >
+                                <template #icon><SearchOutlined /></template>
+                            </a-button>
+                        </div>
+                        <div class="text-sm text-gray-500">
+                            不支持占位符的固定URL（与URL模板二选一）
+                        </div>
+                    </a-form-item>
+
+                    <a-form-item
                         label="标题"
                         :name="['relatedWebsites', websiteIndex, 'title']"
                         :rules="[{ required: true, message: '请输入网站标题' }]"
@@ -412,43 +538,6 @@ onMounted(() => {
                             :rows="1"
                         />
                         <div class="text-sm text-gray-500">对网站功能的简短描述</div>
-                    </a-form-item>
-
-                    <a-form-item
-                        label="URL模板"
-                        :name="['relatedWebsites', websiteIndex, 'urlPattern']"
-                        :rules="[
-                            { validator: validateUrl, message: 'URL模板和固定URL必须至少填写一个' },
-                        ]"
-                    >
-                        <a-input
-                            v-model:value="website.urlPattern"
-                            placeholder="例如: https://www.google.com/search?q={urlParam:q}"
-                        />
-                        <div class="text-sm text-gray-500">
-                            支持的占位符：<br />
-                            - {urlParam:参数名} - 获取URL中的查询参数<br />
-                            - {urlPathSegment:索引} - 获取URL
-                            path中的片段（按/分割，0为第一个；不带索引则返回完整path）<br />
-                            - {dom:选择器} - 获取页面DOM元素的内容<br />
-                            - {repoPath} - 获取当前页面的仓库路径（仅在GitHub/GitLab等平台上可用）
-                        </div>
-                    </a-form-item>
-
-                    <a-form-item
-                        label="固定URL"
-                        :name="['relatedWebsites', websiteIndex, 'url']"
-                        :rules="[
-                            { validator: validateUrl, message: 'URL模板和固定URL必须至少填写一个' },
-                        ]"
-                    >
-                        <a-input
-                            v-model:value="website.url"
-                            placeholder="例如: https://www.google.com/"
-                        />
-                        <div class="text-sm text-gray-500">
-                            不支持占位符的固定URL（与URL模板二选一）
-                        </div>
                     </a-form-item>
 
                     <a-form-item
