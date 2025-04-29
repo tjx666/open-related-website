@@ -4,9 +4,9 @@
 
 ## 🔧 安装
 
-[link-chrome]: https://chromewebstore.google.com/detail/open-related-website/kgpcgldebjnldkgfiecjogencpiadpml 'Chrome 应用商店发布的版本'
+[link-chrome]: https://chromewebstore.google.com/detail/open-related-website/kgpcgldebjnldkgfiecjogencpiadpml 'Version published on Chrome Web Store'
 
-[<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/chrome/chrome.svg" width="48" alt="Chrome" valign="middle">][link-chrome] [<img valign="middle" src="https://img.shields.io/chrome-web-store/v/kgpcgldebjnldkgfiecjogencpiadpml.svg?label=%20" alt="version">][link-chrome] 及其他 Chromium 内核浏览器
+[<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/chrome/chrome.svg" width="48" alt="Chrome" valign="middle">][link-chrome] [<img valign="middle" src="https://img.shields.io/chrome-web-store/v/kgpcgldebjnldkgfiecjogencpiadpml.svg?label=%20" alt="version">][link-chrome] 以及其它 Chromium 内核浏览器
 
 ## 🔍 使用说明
 

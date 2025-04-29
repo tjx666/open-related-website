@@ -6,7 +6,7 @@ A Chrome extension that quickly opens websites related to the current page.
 
 [link-chrome]: https://chromewebstore.google.com/detail/open-related-website/kgpcgldebjnldkgfiecjogencpiadpml 'Version published on Chrome Web Store'
 
-[<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/chrome/chrome.svg" width="48" alt="Chrome" valign="middle">][link-chrome] [<img valign="middle" src="https://img.shields.io/chrome-web-store/v/kgpcgldebjnldkgfiecjogencpiadpml.svg?label=%20" alt="version">][link-chrome] and other Chromium-based browsers
+[<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/chrome/chrome.svg" width="48" alt="Chrome" valign="middle">][link-chrome] [<img valign="middle" src="https://img.shields.io/chrome-web-store/v/kgpcgldebjnldkgfiecjogencpiadpml.svg?label=%20" alt="version">][link-chrome] and other Chromium browsers
 
 ## 🔍 Usage
 
