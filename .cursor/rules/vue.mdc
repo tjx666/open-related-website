@@ -1,0 +1,6 @@
+---
+description: 
+globs: *.vue
+alwaysApply: false
+---
+- put all svg icon under folder components/icons

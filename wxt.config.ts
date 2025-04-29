@@ -39,6 +39,7 @@ export default defineConfig({
         },
     },
     alias: {
+        '@/components': resolve('components'),
         '@/constants': resolve('constants'),
         '@/background': resolve('entrypoints/background'),
         '@/content': resolve('entrypoints/content'),
