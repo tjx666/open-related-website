@@ -2,7 +2,7 @@
     "name": "open-related-website",
     "description": "quickly open websites related to current page",
     "private": true,
-    "version": "1.0.0",
+    "version": "1.1.0",
     "type": "module",
     "packageManager": "pnpm@10.9.0",
     "prettier": "@yutengjing/prettier-config",
